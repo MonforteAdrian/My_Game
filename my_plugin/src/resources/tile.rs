@@ -8,8 +8,11 @@ impl Tile {
 
     #[cfg(feature = "debug")]
     pub fn console_output(&self) -> String {
-        format!("{},"
+        format!("{}",
             match self {
                 Tile::Block => "1",
                 Tile::Empty => " ",
+            }
+        )
+    }
 }

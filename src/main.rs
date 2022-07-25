@@ -1,4 +1,5 @@
 use::bevy::prelude::*;
+use my_plugin::MyPlugin;
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::WorldInspectorPlugin;
@@ -18,5 +19,6 @@ fn main() {
     #[cfg(feature = "debug")]
     app.add_plugin(WorldInspectorPlugin::new());
     app.add_startup_system(camera_setup);
+    app.add_plugin(MyPlugin);
     app.run();
 }

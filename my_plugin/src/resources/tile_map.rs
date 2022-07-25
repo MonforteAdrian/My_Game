@@ -4,30 +4,26 @@ use std::ops::{Deref, DerefMut};
 pub struct TileMap {
     height: u16,
     width: u16,
-    levels: u16,
-    map: Vec<Vec<Vec<Tile>>>,
+    map: Vec<Vec<Tile>>,
 }
 
 impl TileMap {
-    pub fn empty(height: u16, width: u16, levels:u16) -> Self {
-        let map = (0..levels).into_iter()
+    pub fn empty(height: u16, width: u16) -> Self {
+        let map = (0..height).into_iter()
                 .map(|_| (0..width).into_iter()
-                    .map(|_| (0..height).into_iter()
-                        .map(|_| Tile::Empty)
-                    .collect())
+                    .map(|_| Tile::Empty)
                 .collect())
             .collect();
         Self {
             height,
             width,
-            levels,
             map,
         }
     }
 
     #[cfg(feature = "debug")]
     pub fn console_output(&self) -> String {
-        let mut buffer = format!("Map ({}, {}, {})\n",self.width, self.height, self.levels);
+        let mut buffer = format!("Map ({}, {})\n", self.width, self.height);
         let line: String = (0..=(self.width + 1)).into_iter().map(|_| '-').collect();
         buffer = format!("{}{}\n", buffer, line);
         for line in self.iter().rev() {
@@ -41,6 +37,7 @@ impl TileMap {
     }
 
     // Getters
+
     pub fn height(&self) -> u16 {
         self.height
     }
@@ -48,14 +45,10 @@ impl TileMap {
     pub fn width(&self) -> u16 {
         self.width
     }
-
-    pub fn levels(&self) -> u16 {
-        self.levels
-    }
 }
 
 impl Deref for TileMap {
-    type Target = Vec<Vec<Vec<Tile>>>;
+    type Target = Vec<Vec<Tile>>;
 
     fn deref(&self) -> &Self::Target {
         &self.map
