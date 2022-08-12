@@ -1,5 +1,6 @@
 use::bevy::prelude::*;
 use my_plugin::MyPlugin;
+use my_plugin::resources::BoardOptions;
 
 #[cfg(feature = "debug")]
 use bevy_inspector_egui::WorldInspectorPlugin;
@@ -18,7 +19,11 @@ fn main() {
     .add_plugins(DefaultPlugins);
     #[cfg(feature = "debug")]
     app.add_plugin(WorldInspectorPlugin::new());
+    app.insert_resource(BoardOptions {
+        map_size: (20, 20),
+        ..Default::default()
+    })
+    .add_plugin(MyPlugin);
     app.add_startup_system(camera_setup);
-    app.add_plugin(MyPlugin);
     app.run();
 }

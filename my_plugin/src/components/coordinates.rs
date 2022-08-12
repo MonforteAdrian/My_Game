@@ -7,7 +7,7 @@ use bevy::prelude::Component;
 pub struct Coordinates  {
     pub x: u16,
     pub y: u16,
-    pub z: u16,
+    //pub z: u16,
 }
 
 // Coordinates + Coordinates
@@ -18,7 +18,7 @@ impl Add for Coordinates {
         Self {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
-            z: self.z + rhs.z,
+            //z: self.z + rhs.z,
         }
     }
 }
@@ -31,13 +31,14 @@ impl Sub for Coordinates {
         Self {
             x: self.x.saturating_sub(rhs.x),
             y: self.y.saturating_sub(rhs.y),
-            z: self.z.saturating_sub(rhs.z),
+            //z: self.z.saturating_sub(rhs.z),
         }
     }
 }
 
 impl Display for Coordinates {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+        //write!(f, "({}, {}, {})", self.x, self.y, self.z)
+        write!(f, "({}, {})", self.x, self.y)
     }
 }
