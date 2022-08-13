@@ -4,10 +4,16 @@ pub mod resources;
 use bevy::log;
 use bevy::prelude::*;
 use components::Coordinates;
+use resources::tile::Tile;
 use resources::tile_map::TileMap;
 use resources::TileSize;
 use resources::BoardOptions;
 use resources::BoardPosition;
+#[cfg(feature = "debug")]
+use bevy_inspector_egui::RegisterInspectable;
+use components::*;
+
+mod bounds;
 
 pub struct MyPlugin;
 
@@ -15,6 +21,13 @@ impl Plugin for MyPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(Self::create_board);
         log::info!("Loaded Board Plugin");
+        #[cfg(feature = "debug")]
+        {
+            app.register_inspectable::<Coordinates>();
+            app.register_inspectable::<Grass>();
+            app.register_inspectable::<Dirt>();
+            app.register_inspectable::<Stone>();
+        }
     }
 }
 
@@ -65,17 +78,13 @@ impl MyPlugin {
             .insert(Transform::from_translation(board_position))
             .insert(GlobalTransform::default())
             .with_children(|parent| {
-                parent
-                    .spawn_bundle(SpriteBundle {
-                        sprite: Sprite {
-                            color: Color::WHITE,
-                            custom_size: Some(board_size),
-                            ..Default::default()
-                        },
-                        transform: Transform::from_xyz(board_size.x / 2., board_size.y / 2., 0.),
-                        ..Default::default()
-                    })
-                    .insert(Name::new("Background"));
+                Self::spawn_tiles(
+                    parent,
+                    &tile_map,
+                    tile_size,
+                    options.tile_padding,
+                    cube_image,
+                );
                 for (y, line) in tile_map.iter().enumerate() {
                     for (x, tile) in line.iter().enumerate() {
                         parent
@@ -102,6 +111,56 @@ impl MyPlugin {
                     }
                 }
                 });
+    }
+
+    fn spawn_tiles(
+            parent: &mut ChildBuilder,
+            tile_map: &TileMap,
+            size: f32,
+            padding: f32,
+            cube_image: Handle<Image>,
+        ) {
+            for (y, line) in tile_map.iter().enumerate() {
+                for (x, tile) in line.iter().enumerate() {
+                    let coordinates = Coordinates {
+                        x: x as u16,
+                        y: y as u16,
+                    };
+                    let mut cmd = parent.spawn();
+                    cmd.insert_bundle(SpriteBundle {
+                        sprite: Sprite {
+                            custom_size: Some(Vec2::splat(size - padding)),
+                            ..Default::default()
+                        },
+                        transform: Transform::from_xyz(
+                            (x as f32 * size) + (size / 2.),
+                            (y as f32 * size) + (size / 2.),
+                            1.,
+                        ),
+                        ..Default::default()
+                    })
+                    .insert(Name::new(format!("Tile ({}, {})", x, y)))
+                    .insert(coordinates);
+
+                    match tile {
+                        Tile::Block => {
+                            cmd.insert(Grass);
+                            cmd.with_children(|parent| {
+                                parent.spawn_bundle(SpriteBundle {
+                                    sprite: Sprite {
+                                        custom_size: Some(Vec2::splat(size - padding)),
+                                        ..Default::default()
+                                    },
+                                    transform: Transform::from_xyz(0., 0., 1.),
+                                    texture: cube_image.clone(),
+                                    ..Default::default()
+                                });
+                            });
+                        }
+                        Tile::Empty => (),
+                    }
+                }
+            }
     }
 
     fn adaptative_tile_size(

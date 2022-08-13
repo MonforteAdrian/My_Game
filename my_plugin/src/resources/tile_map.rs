@@ -11,7 +11,7 @@ impl TileMap {
     pub fn empty(height: u16, width: u16) -> Self {
         let map = (0..height).into_iter()
                 .map(|_| (0..width).into_iter()
-                    .map(|_| Tile::Empty)
+                    .map(|_| Tile::Block)
                 .collect())
             .collect();
         Self {
