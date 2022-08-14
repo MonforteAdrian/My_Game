@@ -1,6 +1,7 @@
 use crate::resources::tile::Tile;
 use std::ops::{Deref, DerefMut};
 
+#[derive(Debug, Clone)]
 pub struct TileMap {
     height: u16,
     width: u16,

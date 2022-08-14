@@ -3,9 +3,12 @@ pub mod resources;
 
 use bevy::log;
 use bevy::prelude::*;
+use bevy::math::Vec3Swizzles;
+use bounds::Bounds2;
 use components::Coordinates;
 use resources::tile::Tile;
 use resources::tile_map::TileMap;
+use resources::Board;
 use resources::TileSize;
 use resources::BoardOptions;
 use resources::BoardPosition;
@@ -14,12 +17,14 @@ use bevy_inspector_egui::RegisterInspectable;
 use components::*;
 
 mod bounds;
+mod systems;
 
 pub struct MyPlugin;
 
 impl Plugin for MyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(Self::create_board);
+        app.add_startup_system(Self::create_board)
+            .add_system(systems::input::input_handling);
         log::info!("Loaded Board Plugin");
         #[cfg(feature = "debug")]
         {
@@ -85,32 +90,15 @@ impl MyPlugin {
                     options.tile_padding,
                     cube_image,
                 );
-                for (y, line) in tile_map.iter().enumerate() {
-                    for (x, tile) in line.iter().enumerate() {
-                        parent
-                            .spawn_bundle(SpriteBundle {
-                                sprite: Sprite {
-                                    color: Color::GRAY,
-                                    custom_size: Some(Vec2::splat(
-                                        tile_size - options.tile_padding as f32,
-                                    )),
-                                    ..Default::default()
-                                },
-                                transform: Transform::from_xyz(
-                                    (x as f32 * tile_size) + (tile_size / 2.),
-                                    (y as f32 * tile_size) + (tile_size / 2.),
-                                    1.,
-                                ),
-                                ..Default::default()
-                            })
-                            .insert(Name::new(format!("Tile ({}, {})", x, y)))
-                            .insert(Coordinates {
-                                x: x as u16,
-                                y: y as u16,
-                            });
-                    }
-                }
-                });
+            });
+        commands.insert_resource(Board {
+            tile_map,
+            bounds: Bounds2 {
+                position: board_position.xy(),
+                size: board_size,
+            },
+            tile_size,
+        });
     }
 
     fn spawn_tiles(
