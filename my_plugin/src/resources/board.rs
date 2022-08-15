@@ -7,6 +7,7 @@ pub struct Board {
     pub tile_map: TileMap,
     pub bounds: Bounds2,
     pub tile_size: f32,
+    pub entity: Entity,
 }
 
 impl Board {

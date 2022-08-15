@@ -4,6 +4,8 @@ pub mod resources;
 use bevy::log;
 use bevy::prelude::*;
 use bevy::math::Vec3Swizzles;
+use bevy::ecs::schedule::StateData;
+use crate::events::*;
 use bounds::Bounds2;
 use components::Coordinates;
 use resources::tile::Tile;
@@ -17,26 +19,39 @@ use bevy_inspector_egui::RegisterInspectable;
 use components::*;
 
 mod bounds;
+pub mod events;
 mod systems;
 
-pub struct MyPlugin;
+pub struct MyPlugin<T> {
+    pub running_state: T,
+}
 
-impl Plugin for MyPlugin {
+impl<T: StateData> Plugin for MyPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(Self::create_board)
-            .add_system(systems::input::input_handling);
-        log::info!("Loaded Board Plugin");
-        #[cfg(feature = "debug")]
-        {
-            app.register_inspectable::<Coordinates>();
-            app.register_inspectable::<Grass>();
-            app.register_inspectable::<Dirt>();
-            app.register_inspectable::<Stone>();
-        }
+        // When the running states comes into the stack we load a board
+        app.add_system_set(
+            SystemSet::on_enter(self.running_state.clone()).with_system(Self::create_board),
+        )
+        // We handle input and trigger events only if the state is active
+        .add_system_set(
+            SystemSet::on_update(self.running_state.clone())
+                .with_system(systems::input::input_handling),
+                //.with_system(systems::uncover::trigger_event_handler),
+        )
+        // We handle uncovering even if the state is inactive
+        .add_system_set(
+            SystemSet::on_in_stack_update(self.running_state.clone())
+                //.with_system(systems::uncover::uncover_tiles),
+        )
+        .add_system_set(
+            SystemSet::on_exit(self.running_state.clone())
+                .with_system(Self::cleanup_board),
+        )
+        .add_event::<TileTriggerEvent>();
     }
 }
 
-impl MyPlugin {
+impl<T> MyPlugin<T> {
     pub fn create_board(
         mut commands: Commands,
         board_options: Option<Res<BoardOptions>>,
@@ -49,7 +64,7 @@ impl MyPlugin {
         };
 
         //let font = asset_server.load("fonts/pixeled.ttf");
-        let cube_image = asset_server.load("sprites/cube.png");
+        let cube_image = asset_server.load("sprites/cube_green.png");
 
         let mut tile_map = TileMap::empty(options.map_size.0, options.map_size.1);
         #[cfg(feature = "debug")]
@@ -77,7 +92,7 @@ impl MyPlugin {
             BoardPosition::Custom(p) => p,
         };
 
-        commands
+        let board_entity = commands
             .spawn()
             .insert(Name::new("Board"))
             .insert(Transform::from_translation(board_position))
@@ -90,7 +105,8 @@ impl MyPlugin {
                     options.tile_padding,
                     cube_image,
                 );
-            });
+            })
+            .id();
         commands.insert_resource(Board {
             tile_map,
             bounds: Bounds2 {
@@ -98,6 +114,7 @@ impl MyPlugin {
                 size: board_size,
             },
             tile_size,
+            entity: board_entity,
         });
     }
 
@@ -159,5 +176,10 @@ impl MyPlugin {
         let max_width = window.width / width as f32;
         let max_height = window.height / height as f32;
         max_width.min(max_height).clamp(min, max)
+    }
+
+    fn cleanup_board(board: Res<Board>, mut commands: Commands) {
+        commands.entity(board.entity).despawn_recursive();
+        commands.remove_resource::<Board>();
     }
 }
