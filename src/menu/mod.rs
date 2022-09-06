@@ -1,5 +1,5 @@
 use bevy::{app::AppExit, prelude::*};
-use super::{despawn_screen, GameState, TEXT_COLOR};
+use super::{despawn_screen, AppState, TEXT_COLOR};
 
 pub struct MenuPlugin;
 
@@ -7,11 +7,11 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_state(MenuState::Disabled)
-            .add_system_set(SystemSet::on_enter(GameState::Menu).with_system(setup))
+            .add_system_set(SystemSet::on_enter(AppState::Menu).with_system(setup))
             //main
             .add_system_set(SystemSet::on_enter(MenuState::Main).with_system(setup_menu))
             .add_system_set(SystemSet::on_exit(MenuState::Main).with_system(despawn_screen::<OnMainMenuScreen>))
-            .add_system_set(SystemSet::on_update(GameState::Menu)
+            .add_system_set(SystemSet::on_update(AppState::Menu)
                 .with_system(menu_action)
                 .with_system(button_system)
             );
@@ -168,14 +168,14 @@ fn menu_action(
     >,
     mut app_exit_events: EventWriter<AppExit>,
     mut menu_state: ResMut<State<MenuState>>,
-    mut game_state: ResMut<State<GameState>>,
+    mut game_state: ResMut<State<AppState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Clicked {
             match menu_button_action {
                 MenuButtonAction::Quit => app_exit_events.send(AppExit),
                 MenuButtonAction::Play => {
-                    game_state.set(GameState::Game).unwrap();
+                    game_state.set(AppState::Game).unwrap();
                     menu_state.set(MenuState::Disabled).unwrap();
                 }
             }

@@ -1,20 +1,20 @@
 use bevy::prelude::*;
-use super::{despawn_screen, GameState};
+use super::{despawn_screen, AppState};
 
 // This plugin will display a splash screen with Bevy logo for 1 second before switching to the menu
 pub struct SplashPlugin;
 
 impl Plugin for SplashPlugin {
     fn build(&self, app: &mut App) {
-        // As this plugin is managing the splash screen, it will focus on the state `GameState::Splash`
+        // As this plugin is managing the splash screen, it will focus on the state `AppState::Splash`
         app
             // When entering the state, spawn everything needed for this screen
-            .add_system_set(SystemSet::on_enter(GameState::Splash).with_system(splash_setup))
+            .add_system_set(SystemSet::on_enter(AppState::Splash).with_system(splash_setup))
             // While in this state, run the `countdown` system
-            .add_system_set(SystemSet::on_update(GameState::Splash).with_system(countdown))
+            .add_system_set(SystemSet::on_update(AppState::Splash).with_system(countdown))
             // When exiting the state, despawn everything that was spawned for this screen
             .add_system_set(
-                SystemSet::on_exit(GameState::Splash)
+                SystemSet::on_exit(AppState::Splash)
                     .with_system(despawn_screen::<OnSplashScreen>),
             );
     }
@@ -50,11 +50,11 @@ fn splash_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 // Tick the timer, and change state when finished
 fn countdown(
-    mut game_state: ResMut<State<GameState>>,
+    mut game_state: ResMut<State<AppState>>,
     time: Res<Time>,
     mut timer: ResMut<SplashTimer>,
 ) {
     if timer.tick(time.delta()).finished() {
-        game_state.set(GameState::Menu).unwrap();
+        game_state.set(AppState::Menu).unwrap();
     }
 }
