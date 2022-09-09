@@ -4,7 +4,7 @@ use bevy::{
 };
 
 use super::{
-    map::{HexCoordSystem, IsoCoordSystem, TilemapId, TilemapSize, TilemapTileSize, TilemapType},
+    map::{TilemapId, TilemapSize, TilemapTileSize},
     tiles::{TileBundle, TileColor, TilePos, TileStorage, TileTexture},
     TilemapGridSize,
 };
@@ -22,7 +22,6 @@ pub fn get_chunk_2d_transform(
     chunk_size: UVec2,
     z_index: u32,
     grid_size: Vec2,
-    map_type: &TilemapType,
 ) -> Transform {
     // Get the position of the bottom left tile of the chunk: the "anchor tile".
     let anchor_tile_pos = TilePos {
@@ -31,7 +30,7 @@ pub fn get_chunk_2d_transform(
     };
     let grid_size: TilemapGridSize = grid_size.into();
     // Now get the position of the anchor tile.
-    let r = get_tile_pos_in_world_space(&anchor_tile_pos, &grid_size, map_type);
+    let r = get_tile_pos_in_world_space(&anchor_tile_pos, &grid_size);
     Transform::from_xyz(r.x, r.y, z_index as f32)
 }
 
@@ -39,75 +38,12 @@ pub fn get_chunk_2d_transform(
 pub fn get_tile_pos_in_world_space(
     tile_pos: &TilePos,
     grid_size: &TilemapGridSize,
-    tilemap_type: &TilemapType,
 ) -> Vec2 {
     let tile_pos_f32: Vec2 = tile_pos.into();
     let grid_size: Vec2 = grid_size.into();
     let mut pos = Vec2::new(grid_size.x * tile_pos_f32.x, grid_size.y * tile_pos_f32.y);
 
-    match tilemap_type {
-        TilemapType::Hexagon(HexCoordSystem::Row) => {
-            let x_offset = tile_pos_f32.y * (0.5 * grid_size.x).floor();
-            let y_offset = -1.0 * tile_pos_f32.y * (0.25 * grid_size.y).ceil();
-            pos.x += x_offset;
-            pos.y += y_offset;
-        }
-        TilemapType::Hexagon(HexCoordSystem::RowEven) => {
-            let offset = (0.25 * grid_size.x).floor();
-            if tile_pos.y % 2 == 0 {
-                pos.x -= offset;
-            } else {
-                pos.x += offset;
-            }
-            pos.y -= tile_pos_f32.y * (0.25 * grid_size.y as f32).ceil();
-        }
-        TilemapType::Hexagon(HexCoordSystem::RowOdd) => {
-            let offset = (0.25 * grid_size.x).floor();
-            if tile_pos.y % 2 == 0 {
-                pos.x += offset;
-            } else {
-                pos.x -= offset;
-            }
-            pos.y -= tile_pos_f32.y * (0.25 * grid_size.y).ceil();
-        }
-        TilemapType::Hexagon(HexCoordSystem::Column) => {
-            let x_offset = -1.0 * tile_pos_f32.x * (0.25 * grid_size.x).floor();
-            let y_offset = tile_pos_f32.x * (0.5 * grid_size.y).ceil();
-            pos.x += x_offset;
-            pos.y += y_offset;
-        }
-        TilemapType::Hexagon(HexCoordSystem::ColumnEven) => {
-            let offset = (0.25 * grid_size.y).floor();
-            if tile_pos.x % 2 == 0 {
-                pos.y -= offset;
-            } else {
-                pos.y += offset;
-            }
-            pos.x -= tile_pos_f32.x * (0.25 * grid_size.x as f32).ceil();
-        }
-        TilemapType::Hexagon(HexCoordSystem::ColumnOdd) => {
-            let offset = (0.25 * grid_size.y).floor();
-            if tile_pos.x % 2 == 0 {
-                pos.y += offset;
-            } else {
-                pos.y -= offset;
-            }
-            pos.x -= tile_pos_f32.x * (0.25 * grid_size.x).ceil();
-        }
-        TilemapType::Isometric {
-            coord_system: IsoCoordSystem::Diamond,
-            ..
-        } => {
-            pos = project_iso_diamond(tile_pos_f32.x, tile_pos_f32.y, grid_size.x, grid_size.y);
-        }
-        TilemapType::Isometric {
-            coord_system: IsoCoordSystem::Staggered,
-            ..
-        } => {
-            pos = project_iso_staggered(tile_pos_f32.x, tile_pos_f32.y, grid_size.x, grid_size.y);
-        }
-        TilemapType::Square { .. } => {}
-    };
+    pos = project_iso_diamond(tile_pos_f32.x, tile_pos_f32.y, grid_size.x, grid_size.y);
     pos
 }
 
@@ -366,10 +302,9 @@ impl Neighbors<Entity> {
 pub fn get_tile_neighbors(
     tile_pos: &TilePos,
     tile_storage: &TileStorage,
-    tilemap_type: &TilemapType,
 ) -> Neighbors<Entity> {
     Neighbors::from_neighboring_pos(
-        &get_neighboring_pos(tile_pos, &tile_storage.size, tilemap_type),
+        &get_neighboring_pos(tile_pos, &tile_storage.size),
         tile_storage,
     )
 }
@@ -383,52 +318,8 @@ pub fn get_tile_neighbors(
 pub fn get_neighboring_pos(
     tile_pos: &TilePos,
     tilemap_size: &TilemapSize,
-    map_type: &TilemapType,
 ) -> Neighbors<TilePos> {
-    match map_type {
-        TilemapType::Square {
-            neighbors_include_diagonals: true,
-        } => square_neighbor_pos_with_diagonals(tile_pos, tilemap_size),
-        TilemapType::Square {
-            neighbors_include_diagonals: false,
-        } => square_neighbor_pos(tile_pos, tilemap_size),
-        TilemapType::Isometric {
-            neighbors_include_diagonals,
-            coord_system: IsoCoordSystem::Diamond,
-        } => {
-            if *neighbors_include_diagonals {
-                diamond_neighbor_pos_with_diagonals(tile_pos, tilemap_size)
-            } else {
-                diamond_neighbor_pos(tile_pos, tilemap_size)
-            }
-        }
-        TilemapType::Isometric {
-            neighbors_include_diagonals,
-            coord_system: IsoCoordSystem::Staggered,
-        } => {
-            if *neighbors_include_diagonals {
-                staggered_neighbor_pos_with_diagonals(tile_pos, tilemap_size)
-            } else {
-                staggered_neighbor_pos(tile_pos, tilemap_size)
-            }
-        }
-        TilemapType::Hexagon(HexCoordSystem::Row) => hex_row_neighbor_pos(tile_pos, tilemap_size),
-        TilemapType::Hexagon(HexCoordSystem::RowEven) => {
-            hex_row_even_neighbor_pos(tile_pos, tilemap_size)
-        }
-        TilemapType::Hexagon(HexCoordSystem::RowOdd) => {
-            hex_row_odd_neighbor_pos(tile_pos, tilemap_size)
-        }
-        TilemapType::Hexagon(HexCoordSystem::Column) => {
-            hex_col_neighbor_pos(tile_pos, tilemap_size)
-        }
-        TilemapType::Hexagon(HexCoordSystem::ColumnEven) => {
-            hex_col_even_neighbor_pos(tile_pos, tilemap_size)
-        }
-        TilemapType::Hexagon(HexCoordSystem::ColumnOdd) => {
-            hex_col_odd_neighbor_pos(tile_pos, tilemap_size)
-        }
-    }
+    diamond_neighbor_pos_with_diagonals(tile_pos, tilemap_size)
 }
 
 impl TilePos {

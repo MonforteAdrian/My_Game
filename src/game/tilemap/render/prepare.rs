@@ -16,7 +16,7 @@ use super::{
     helpers::get_chunk_2d_transform,
     map::{
         TilemapId, TilemapSize, TilemapSpacing, TilemapTexture, TilemapTextureSize,
-        TilemapTileSize, TilemapType,
+        TilemapTileSize,
     },
 };
 use super::{map::TilemapGridSize, render::RenderChunkSize, render::SecondsSinceStartup};
@@ -47,7 +47,6 @@ pub(crate) fn prepare(
         &TilemapTextureSize,
         &TilemapSpacing,
         &TilemapGridSize,
-        &TilemapType,
         &TilemapTexture,
         &TilemapSize,
         &ComputedVisibility,
@@ -66,7 +65,6 @@ pub(crate) fn prepare(
             texture_size,
             spacing,
             grid_size,
-            mesh_type,
             texture,
             map_size,
             visibility,
@@ -87,7 +85,6 @@ pub(crate) fn prepare(
             relative_tile_pos,
             &chunk_data,
             **chunk_size,
-            *mesh_type,
             (*tile_size).into(),
             (*texture_size).into(),
             (*spacing).into(),
@@ -118,7 +115,6 @@ pub(crate) fn prepare(
         texture_size,
         spacing,
         grid_size,
-        mesh_type,
         texture,
         map_size,
         visibility,
@@ -126,7 +122,6 @@ pub(crate) fn prepare(
     {
         let chunks = chunk_storage.get_chunk_storage(&UVec4::new(0, 0, 0, entity.id()));
         for chunk in chunks.values_mut() {
-            chunk.map_type = *mesh_type;
             chunk.transform = *transform;
             chunk.texture = texture.clone();
             chunk.map_size = *map_size;
@@ -164,7 +159,6 @@ pub(crate) fn prepare(
             chunk.size,
             0,
             chunk.grid_size,
-            &chunk.map_type,
         ) * chunk_global_transform;
 
         let mut chunk_uniform: TilemapUniformData = chunk.into();
@@ -175,7 +169,6 @@ pub(crate) fn prepare(
             .insert(chunk.texture.0.clone_weak())
             .insert(transform)
             .insert(ChunkId(chunk.position))
-            .insert(chunk.map_type)
             .insert(TilemapId(Entity::from_raw(chunk.tilemap_id)))
             .insert(DynamicUniformIndex::<MeshUniform> {
                 index: mesh_uniforms.push(MeshUniform {

@@ -8,7 +8,7 @@ use super::tiles::AnimatedTile;
 use super::{
     map::{
         TilemapId, TilemapSize, TilemapSpacing, TilemapTexture, TilemapTextureSize,
-        TilemapTileSize, TilemapType,
+        TilemapTileSize,
     },
     tiles::{TileColor, TileFlip, TilePos, TileTexture, TileVisible},
 };
@@ -59,7 +59,6 @@ pub struct ExtractedTilemapBundle {
     grid_size: TilemapGridSize,
     texture_size: TilemapTextureSize,
     spacing: TilemapSpacing,
-    mesh_type: TilemapType,
     texture: TilemapTexture,
     map_size: TilemapSize,
     visibility: ComputedVisibility,
@@ -110,7 +109,6 @@ pub fn extract(
             &TilemapTileSize,
             &TilemapSpacing,
             &TilemapGridSize,
-            &TilemapType,
             &TilemapTexture,
             &TilemapSize,
             &ComputedVisibility,
@@ -120,8 +118,6 @@ pub fn extract(
         Query<
             Entity,
             Or<(
-                Added<TilemapType>,
-                Changed<TilemapType>,
                 Changed<GlobalTransform>,
                 Changed<TilemapTexture>,
                 Changed<TilemapTileSize>,
@@ -178,10 +174,9 @@ pub fn extract(
                     texture_size: TilemapTextureSize::default(),
                     spacing: *data.3,
                     grid_size: *data.4,
-                    mesh_type: *data.5,
-                    texture: data.6.clone(),
-                    map_size: *data.7,
-                    visibility: data.8.clone(),
+                    texture: data.5.clone(),
+                    map_size: *data.6,
+                    visibility: data.7.clone(),
                 },
             ),
         );
@@ -211,10 +206,9 @@ pub fn extract(
                         texture_size: TilemapTextureSize::default(),
                         spacing: *data.3,
                         grid_size: *data.4,
-                        mesh_type: *data.5,
-                        texture: data.6.clone(),
-                        map_size: *data.7,
-                        visibility: data.8.clone(),
+                        texture: data.5.clone(),
+                        map_size: *data.6,
+                        visibility: data.7.clone(),
                     },
                 ),
             );
@@ -225,7 +219,7 @@ pub fn extract(
         extracted_tilemaps.drain().map(|kv| kv.1).collect();
 
     // Extracts tilemap textures.
-    for (entity, _, tile_size, spacing, _, _, texture, _, _) in tilemap_query.iter() {
+    for (entity, _, tile_size, spacing, _, texture, _, _) in tilemap_query.iter() {
         let texture_size = if let Some(_atlas_image) = images.get(&texture.0) {
             #[cfg(not(feature = "atlas"))]
             if !_atlas_image

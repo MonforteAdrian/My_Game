@@ -17,28 +17,10 @@ use bevy::{
     },
 };
 
-use super::map::{HexCoordSystem, IsoCoordSystem, TilemapType};
-
 use super::{chunk::TilemapUniformData, prepare::MeshUniform};
 
-pub const SQUARE_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 8094008129742001941);
-pub const ISO_DIAMOND_SHADER_HANDLE: HandleUntyped =
+pub const SHADER_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 5716002228110903793);
-pub const ISO_STAGGERED_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 6571326172373592468);
-pub const HEX_COLUMN_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 12158158650956014109);
-pub const HEX_COLUMN_ODD_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 11472021184100190415);
-pub const HEX_COLUMN_EVEN_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 5336568075571462317);
-pub const HEX_ROW_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 15900471900964169180);
-pub const HEX_ROW_ODD_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 14864388685772956547);
-pub const HEX_ROW_EVEN_SHADER_HANDLE: HandleUntyped =
-    HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 14433932828806852042);
 
 #[derive(Clone)]
 pub struct TilemapPipeline {
@@ -159,31 +141,13 @@ impl FromWorld for TilemapPipeline {
 #[derive(Debug, Component, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TilemapPipelineKey {
     pub msaa: u32,
-    pub mesh_type: TilemapType,
 }
 
 impl SpecializedRenderPipeline for TilemapPipeline {
     type Key = TilemapPipelineKey;
 
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
-        let shader = match key.mesh_type {
-            TilemapType::Square { .. } => SQUARE_SHADER_HANDLE.typed::<Shader>(),
-            TilemapType::Isometric {
-                coord_system: iso_type,
-                ..
-            } => match iso_type {
-                IsoCoordSystem::Diamond => ISO_DIAMOND_SHADER_HANDLE.typed::<Shader>(),
-                IsoCoordSystem::Staggered => ISO_STAGGERED_SHADER_HANDLE.typed::<Shader>(),
-            },
-            TilemapType::Hexagon(hex_type) => match hex_type {
-                HexCoordSystem::Column => HEX_COLUMN_SHADER_HANDLE.typed::<Shader>(),
-                HexCoordSystem::ColumnEven => HEX_COLUMN_EVEN_SHADER_HANDLE.typed::<Shader>(),
-                HexCoordSystem::ColumnOdd => HEX_COLUMN_ODD_SHADER_HANDLE.typed::<Shader>(),
-                HexCoordSystem::Row => HEX_ROW_SHADER_HANDLE.typed::<Shader>(),
-                HexCoordSystem::RowEven => HEX_ROW_EVEN_SHADER_HANDLE.typed::<Shader>(),
-                HexCoordSystem::RowOdd => HEX_ROW_ODD_SHADER_HANDLE.typed::<Shader>(),
-            },
-        };
+        let shader = SHADER_HANDLE.typed::<Shader>();
 
         let formats = vec![
             // Position
