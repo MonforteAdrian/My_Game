@@ -13,10 +13,7 @@ impl Plugin for SplashPlugin {
             // While in this state, run the `countdown` system
             .add_system_set(SystemSet::on_update(AppState::Splash).with_system(countdown))
             // When exiting the state, despawn everything that was spawned for this screen
-            .add_system_set(
-                SystemSet::on_exit(AppState::Splash)
-                    .with_system(despawn_screen::<OnSplashScreen>),
-            );
+            .add_system_set(SystemSet::on_exit(AppState::Splash).with_system(despawn_screen::<OnSplashScreen>));
     }
 }
 

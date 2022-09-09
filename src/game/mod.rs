@@ -1,14 +1,8 @@
-pub mod animate;
-pub mod camera;
-pub mod map;
-
-use self::camera::CameraPlugin;
-use crate::game::{
-    map::MapPlugin,
-};
+mod camera;
+mod tilemap;
 
 use bevy::prelude::*;
-use super::{despawn_screen, AppState, TEXT_COLOR};
+use super::{despawn_screen, AppState};
 
 pub struct GamePlugin;
 
@@ -16,8 +10,8 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_state(GameState::Disabled)
-            .add_plugin(CameraPlugin)
-            .add_plugin(MapPlugin)
+            .add_plugin(camera::CameraPlugin)
+            .add_plugin(tilemap::TilemapPlugin)
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(setup))
             .add_system_set(SystemSet::on_exit(AppState::Game).with_system(despawn_screen::<OnGameScreen>))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(game));

@@ -1,93 +1,52 @@
-use std::time::Duration;
-
-use bevy::{input::mouse::MouseWheel, prelude::*};
-
-use crate::game::animate::{AnimateRange, Ease};
-
-#[derive(Component)]
-pub struct PlayerCamera {
-    base_speed: f32,
-}
-
-impl Default for PlayerCamera {
-    fn default() -> Self {
-        Self { base_speed: 4.0 }
-    }
-}
+use bevy::{input::Input, math::Vec3, prelude::*};
 
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_startup_system(setup_camera);
-            //.add_system(move_camera);
+            .add_startup_system(setup_camera)
+            .add_system(move_camera);
     }
 }
 
 fn setup_camera(mut commands: Commands) {
     commands.spawn_bundle(Camera2dBundle::default());
-//    commands
-//        .spawn_bundle(Camera3dBundle {
-//            transform: Transform {
-//                translation: Vec3::new(0.0, -1.5, 8.0),
-//                rotation: Quat::from_rotation_x(0.2),
-//                ..default()
-//            },
-//            ..default()
-//        })
-//        .insert(PlayerCamera::default());
 }
 
 pub fn move_camera(
-    mut view_height: Local<i8>,
-    mut scroll_accumulation: Local<f32>,
     time: Res<Time>,
-    input: Res<Input<KeyCode>>,
-    mut mouse_wheel_events: EventReader<MouseWheel>,
-    mut cameras: Query<(&PlayerCamera, &mut Transform)>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(&mut Transform, &mut OrthographicProjection), With<Camera>>,
 ) {
-    for event in mouse_wheel_events.iter() {
-        match event.unit {
-            bevy::input::mouse::MouseScrollUnit::Line => {
-                *scroll_accumulation += 20.0 * event.y.signum()
-            }
-            bevy::input::mouse::MouseScrollUnit::Pixel => *scroll_accumulation += event.y,
-        }
-        if *scroll_accumulation >= 20.0 {
-            *scroll_accumulation = 0.0;
-            *view_height += 1;
-        } else if *scroll_accumulation <= -20.0 {
-            *scroll_accumulation = 0.0;
-            *view_height -= 1;
-        }
-
-        *view_height = view_height.min(1).max(-1);
-    }
-
-    for (camera, mut transform) in &mut cameras {
+    for (mut transform, mut ortho) in query.iter_mut() {
         let mut direction = Vec3::ZERO;
-        if input.any_pressed([KeyCode::A, KeyCode::Left]) {
-            direction.x -= 1.0;
+        if keyboard_input.pressed(KeyCode::Left) {
+            direction -= Vec3::new(1.0, 0.0, 0.0);
         }
-        if input.any_pressed([KeyCode::D, KeyCode::Right]) {
-            direction.x += 1.0;
+        if keyboard_input.pressed(KeyCode::Right) {
+            direction += Vec3::new(1.0, 0.0, 0.0);
         }
-        if input.any_pressed([KeyCode::W, KeyCode::Up]) {
-            direction.y += 1.0;
+        if keyboard_input.pressed(KeyCode::Up) {
+            direction += Vec3::new(0.0, 1.0, 0.0);
         }
-        if input.any_pressed([KeyCode::S, KeyCode::Down]) {
-            direction.y -= 1.0;
+        if keyboard_input.pressed(KeyCode::Down) {
+            direction -= Vec3::new(0.0, 1.0, 0.0);
         }
-        transform.translation += direction * camera.base_speed * time.delta_seconds();
+        if keyboard_input.pressed(KeyCode::Z) {
+            ortho.scale -= 0.1;
+        }
+        if keyboard_input.pressed(KeyCode::A) {
+            ortho.scale += 0.1;
+        }
+        if ortho.scale < 0.5 {
+            ortho.scale = 0.5;
+        }
 
-        let target_z = 8.0 + *view_height as f32 * 3.0;
-        let mut animation = AnimateRange::new(
-            Duration::from_secs_f32(0.2),
-            Ease::Linear,
-            transform.translation.z..target_z,
-            false,
-        );
-        transform.translation.z = animation.tick(time.delta());
+        let z = transform.translation.z;
+        transform.translation += time.delta_seconds() * direction * 500.;
+        // Important! We need to restore the Z values when moving the camera around.
+        // Bevy has a specific camera setup and this can mess with how our layers are shown.
+        transform.translation.z = z;
     }
 }
