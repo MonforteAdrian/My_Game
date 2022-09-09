@@ -14,10 +14,10 @@ fn main() {
         // Background Color
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
         // Hot reloading assets
-//        .insert_resource(AssetServerSettings {
-//            watch_for_changes: true,
-//            ..default()
-//        })
+        .insert_resource(AssetServerSettings {
+            watch_for_changes: true,
+            ..default()
+        })
         .add_state(AppState::Splash)
         .add_plugins(DefaultPlugins)
         .add_plugins(MyPlugins)

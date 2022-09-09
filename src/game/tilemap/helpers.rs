@@ -43,7 +43,7 @@ pub fn get_tile_pos_in_world_space(
     let grid_size: Vec2 = grid_size.into();
     let mut pos = Vec2::new(grid_size.x * tile_pos_f32.x, grid_size.y * tile_pos_f32.y);
 
-    pos = project_iso_diamond(tile_pos_f32.x, tile_pos_f32.y, grid_size.x, grid_size.y);
+    pos = project(tile_pos_f32.x, tile_pos_f32.y, grid_size.x, grid_size.y);
     pos
 }
 
@@ -157,24 +157,12 @@ pub fn get_centered_transform_2d(
 /// Projects a 2D screen space point into isometric diamond space.
 ///
 /// `grid_width` and `grid_height` are the dimensions of the grid in pixels.
-pub fn project_iso_diamond(x: f32, y: f32, grid_width: f32, grid_height: f32) -> Vec2 {
+pub fn project(x: f32, y: f32, grid_width: f32, grid_height: f32) -> Vec2 {
     let dx = grid_width / 2.0;
     let dy = grid_height / 2.0;
 
     let new_x = (x + y) * dx;
     let new_y = (-x + y) * dy;
-    Vec2::new(new_x, new_y)
-}
-
-/// Projects a 2D screen space point into isometric staggered space.
-///
-/// `grid_width` and `grid_height` are the dimensions of the grid in pixels.
-pub fn project_iso_staggered(x: f32, y: f32, grid_width: f32, grid_height: f32) -> Vec2 {
-    let dx = grid_width / 2.0;
-    let dy = grid_height / 2.0;
-
-    let new_x = x * grid_width + y * dx;
-    let new_y = y * dy;
     Vec2::new(new_x, new_y)
 }
 
@@ -319,7 +307,7 @@ pub fn get_neighboring_pos(
     tile_pos: &TilePos,
     tilemap_size: &TilemapSize,
 ) -> Neighbors<TilePos> {
-    diamond_neighbor_pos_with_diagonals(tile_pos, tilemap_size)
+    neighbor_pos_with_diagonals(tile_pos, tilemap_size)
 }
 
 impl TilePos {
@@ -443,277 +431,37 @@ impl TilePos {
         }
     }
 
-    fn square_north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
+    fn north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
         self.plus_y(tilemap_size)
     }
 
-    fn square_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
+    fn north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
         self.minus_x_plus_y(tilemap_size)
     }
 
-    fn square_west(&self) -> Option<TilePos> {
+    fn west(&self) -> Option<TilePos> {
         self.minus_x()
     }
 
-    fn square_south_west(&self) -> Option<TilePos> {
+    fn south_west(&self) -> Option<TilePos> {
         self.minus_xy()
     }
 
-    fn square_south(&self) -> Option<TilePos> {
+    fn south(&self) -> Option<TilePos> {
         self.minus_y()
     }
 
-    fn square_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
+    fn south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
         self.plus_x_minus_y(tilemap_size)
     }
 
-    fn square_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
+    fn east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
         self.plus_x(tilemap_size)
     }
 
-    fn square_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
+    fn north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
         self.plus_xy(tilemap_size)
     }
-
-    fn hex_row_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.minus_x_plus_y(tilemap_size)
-    }
-
-    fn hex_row_odd_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 == 0 {
-            self.plus_y(tilemap_size)
-        } else {
-            self.minus_x_plus_y(tilemap_size)
-        }
-    }
-
-    fn hex_row_even_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 != 0 {
-            self.plus_y(tilemap_size)
-        } else {
-            self.minus_x_plus_y(tilemap_size)
-        }
-    }
-
-    fn hex_row_west(&self) -> Option<TilePos> {
-        self.minus_x()
-    }
-
-    fn hex_row_odd_west(&self) -> Option<TilePos> {
-        self.minus_x()
-    }
-
-    fn hex_row_even_west(&self) -> Option<TilePos> {
-        self.minus_x()
-    }
-
-    fn hex_row_south_west(&self) -> Option<TilePos> {
-        self.minus_y()
-    }
-
-    fn hex_row_odd_south_west(&self) -> Option<TilePos> {
-        if self.y % 2 == 0 {
-            self.minus_y()
-        } else {
-            self.minus_xy()
-        }
-    }
-
-    fn hex_row_even_south_west(&self) -> Option<TilePos> {
-        if self.y % 2 != 0 {
-            self.minus_y()
-        } else {
-            self.minus_xy()
-        }
-    }
-
-    fn hex_row_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x_minus_y(tilemap_size)
-    }
-
-    fn hex_row_odd_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 == 0 {
-            self.plus_x_minus_y(tilemap_size)
-        } else {
-            self.minus_y()
-        }
-    }
-
-    fn hex_row_even_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 != 0 {
-            self.plus_x_minus_y(tilemap_size)
-        } else {
-            self.minus_y()
-        }
-    }
-
-    fn hex_row_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_row_odd_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_row_even_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_row_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_y(tilemap_size)
-    }
-
-    fn hex_row_odd_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 == 0 {
-            self.plus_xy(tilemap_size)
-        } else {
-            self.plus_x(tilemap_size)
-        }
-    }
-
-    fn hex_row_even_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.y % 2 != 0 {
-            self.plus_xy(tilemap_size)
-        } else {
-            self.plus_x(tilemap_size)
-        }
-    }
-
-    fn hex_col_north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_col_odd_north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_col_even_north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_col_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.minus_x_plus_y(tilemap_size)
-    }
-
-    fn hex_col_odd_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 == 0 {
-            self.minus_x_plus_y(tilemap_size)
-        } else {
-            self.minus_x()
-        }
-    }
-
-    fn hex_col_even_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 != 0 {
-            self.minus_x_plus_y(tilemap_size)
-        } else {
-            self.minus_x()
-        }
-    }
-
-    fn hex_col_south_west(&self) -> Option<TilePos> {
-        self.minus_x()
-    }
-
-    fn hex_col_odd_south_west(&self) -> Option<TilePos> {
-        if self.x % 2 == 0 {
-            self.minus_x()
-        } else {
-            self.minus_xy()
-        }
-    }
-
-    fn hex_col_even_south_west(&self) -> Option<TilePos> {
-        if self.x % 2 != 0 {
-            self.minus_x()
-        } else {
-            self.minus_xy()
-        }
-    }
-
-    fn hex_col_south(&self) -> Option<TilePos> {
-        self.minus_y()
-    }
-
-    fn hex_col_odd_south(&self) -> Option<TilePos> {
-        self.minus_y()
-    }
-
-    fn hex_col_even_south(&self) -> Option<TilePos> {
-        self.minus_y()
-    }
-
-    fn hex_col_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x_minus_y(tilemap_size)
-    }
-
-    fn hex_col_odd_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 == 0 {
-            self.plus_x(tilemap_size)
-        } else {
-            self.plus_x_minus_y(tilemap_size)
-        }
-    }
-
-    fn hex_col_even_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 != 0 {
-            self.plus_x(tilemap_size)
-        } else {
-            self.plus_x_minus_y(tilemap_size)
-        }
-    }
-
-    fn hex_col_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
-
-    fn hex_col_odd_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 == 0 {
-            self.plus_xy(tilemap_size)
-        } else {
-            self.plus_x(tilemap_size)
-        }
-    }
-
-    fn hex_col_even_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        if self.x % 2 != 0 {
-            self.plus_xy(tilemap_size)
-        } else {
-            self.plus_x(tilemap_size)
-        }
-    }
-
-    fn iso_staggered_north(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_y(tilemap_size)
-    }
-
-    fn iso_staggered_north_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.minus_x_plus_2y(tilemap_size)
-    }
-
-    fn iso_staggered_west(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.minus_x_plus_y(tilemap_size)
-    }
-
-    fn iso_staggered_south_west(&self) -> Option<TilePos> {
-        self.minus_x()
-    }
-
-    fn iso_staggered_south(&self) -> Option<TilePos> {
-        self.minus_y()
-    }
-
-    fn iso_staggered_south_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x_minus_2y(tilemap_size)
-    }
-
-    fn iso_staggered_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x_minus_y(tilemap_size)
-    }
-
-    fn iso_staggered_north_east(&self, tilemap_size: &TilemapSize) -> Option<TilePos> {
-        self.plus_x(tilemap_size)
-    }
 }
 
 /// Retrieves the positions of neighbors of the tile with the specified position, assuming
@@ -724,260 +472,18 @@ impl TilePos {
 ///     * between `0` and `tilemap_size.x` in the `x` position,
 ///     * between `0` and `tilemap_size.y` in the `y` position.
 /// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn square_neighbor_pos_with_diagonals(
+pub fn neighbor_pos_with_diagonals(
     tile_pos: &TilePos,
     tilemap_size: &TilemapSize,
 ) -> Neighbors<TilePos> {
     Neighbors {
-        north: tile_pos.square_north(tilemap_size),
-        north_west: tile_pos.square_north_west(tilemap_size),
-        west: tile_pos.square_west(),
-        south_west: tile_pos.square_south_west(),
-        south: tile_pos.square_south(),
-        south_east: tile_pos.square_south_east(tilemap_size),
-        east: tile_pos.square_east(tilemap_size),
-        north_east: tile_pos.square_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the 1) tile exists on a [`Isometric`](crate::map::Isometric) tilemap with [`Diamond`](crate::map::IsoCoordSystem::Staggered) coordinate system,
-/// and 2) neighbors **do** include tiles located diagonally across from the specified position.
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn staggered_neighbor_pos_with_diagonals(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.iso_staggered_north(tilemap_size),
-        north_west: tile_pos.iso_staggered_north_west(tilemap_size),
-        west: tile_pos.iso_staggered_west(tilemap_size),
-        south_west: tile_pos.iso_staggered_south_west(),
-        south: tile_pos.iso_staggered_south(),
-        south_east: tile_pos.iso_staggered_south_east(tilemap_size),
-        east: tile_pos.iso_staggered_east(tilemap_size),
-        north_east: tile_pos.iso_staggered_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the 1) tile exists on a [`Isometric`](crate::map::Isometric) tilemap with [`Diamond`](crate::map::IsoCoordSystem::Diamond) coordinate system,
-/// and 2) neighbors **do** include tiles located diagonally across from the specified position.
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-///
-/// Note that is equivalent to calling [`square_neighbor_pos_with_diagonals`](crate::helpers::square_neighbor_pos_with_diagonals) as the connectivity of the graph underlying
-/// [`Square`](crate::map::TilemapType::Square) is the same as the connectivity of the graph underlying
-/// [`Isometric`](crate::map::TilemapType::Isometric) with coordinate system [`Diamond`](crate::map::IsoCoordSystem::Diamond).
-pub fn diamond_neighbor_pos_with_diagonals(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    square_neighbor_pos_with_diagonals(tile_pos, tilemap_size)
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// that 1) the tile exists on [`Square`](crate::map::TilemapType::Square) tilemap
-/// and 2) neighbors **do not** include tiles located diagonally across from the specified position.
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn square_neighbor_pos(tile_pos: &TilePos, tilemap_size: &TilemapSize) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.square_north(tilemap_size),
-        north_west: None,
-        west: tile_pos.square_west(),
-        south_west: None,
-        south: tile_pos.square_south(),
-        south_east: None,
-        east: tile_pos.square_east(tilemap_size),
-        north_east: None,
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the 1) tile exists on a [`Isometric`](crate::map::Isometric) tilemap with [`Diamond`](crate::map::IsoCoordSystem::Diamond) coordinate system,
-/// and 2) neighbors **do not** include tiles located diagonally across from the specified position.
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-///
-/// Note that is equivalent to calling [`square_neighbor_pos`](crate::helpers::square_neighbor_pos) as the connectivity of the graph underlying
-/// [`TilemapType::Square`](crate::map::TilemapType::Square) is the same as the connectivity of the graph underlying
-/// [`TilemapType::Isometric`](crate::map::TilemapType::Isometric) with coordinate system [`Diamond`](crate::map::IsoCoordSystem::Diamond).
-pub fn diamond_neighbor_pos(tile_pos: &TilePos, tilemap_size: &TilemapSize) -> Neighbors<TilePos> {
-    square_neighbor_pos(tile_pos, tilemap_size)
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the 1) tile exists on a [`Isometric`](crate::map::Isometric) tilemap with [`Diamond`](crate::map::IsoCoordSystem::Staggered) coordinate system,
-/// and 2) neighbors **do not** include tiles located diagonally across from the specified position.
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn staggered_neighbor_pos(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.iso_staggered_north(tilemap_size),
-        north_west: None,
-        west: tile_pos.iso_staggered_west(tilemap_size),
-        south_west: None,
-        south: tile_pos.iso_staggered_south(),
-        south_east: None,
-        east: tile_pos.iso_staggered_east(tilemap_size),
-        north_east: None,
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap with
-/// coordinate system [`HexCoordSystem::Row`](crate::map::HexCoordSystem::Row).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_row_neighbor_pos(tile_pos: &TilePos, tilemap_size: &TilemapSize) -> Neighbors<TilePos> {
-    Neighbors {
-        north: None,
-        north_west: tile_pos.hex_row_north_west(tilemap_size),
-        west: tile_pos.hex_row_west(),
-        south_west: tile_pos.hex_row_south_west(),
-        south: None,
-        south_east: tile_pos.hex_row_south_east(tilemap_size),
-        east: tile_pos.hex_row_east(tilemap_size),
-        north_east: tile_pos.hex_row_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap
-/// with coordinate system [`HexCoordSystem::RowOdd`](crate::map::HexCoordSystem::RowOdd).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_row_odd_neighbor_pos(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: None,
-        north_west: tile_pos.hex_row_odd_north_west(tilemap_size),
-        west: tile_pos.hex_row_odd_west(),
-        south_west: tile_pos.hex_row_odd_south_west(),
-        south: None,
-        south_east: tile_pos.hex_row_odd_south_east(tilemap_size),
-        east: tile_pos.hex_row_odd_east(tilemap_size),
-        north_east: tile_pos.hex_row_odd_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap with
-/// coordinate system [`HexCoordSystem::Row`](crate::map::HexCoordSystem::RowEven).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_row_even_neighbor_pos(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: None,
-        north_west: tile_pos.hex_row_north_west(tilemap_size),
-        west: tile_pos.hex_row_west(),
-        south_west: tile_pos.hex_row_south_west(),
-        south: None,
-        south_east: tile_pos.hex_row_south_east(tilemap_size),
-        east: tile_pos.hex_row_east(tilemap_size),
-        north_east: tile_pos.hex_row_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap with
-/// coordinate system [`HexCoordSystem::Col`](crate::map::HexCoordSystem::Col).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_col_neighbor_pos(tile_pos: &TilePos, tilemap_size: &TilemapSize) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.hex_col_north(tilemap_size),
-        north_west: tile_pos.hex_col_north_west(tilemap_size),
-        west: None,
-        south_west: tile_pos.hex_col_south_west(),
-        south: tile_pos.hex_col_south(),
-        south_east: tile_pos.hex_col_south_east(tilemap_size),
-        east: None,
-        north_east: tile_pos.hex_col_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap with
-/// coordinate system [`HexCoordSystem::ColOdd`](crate::map::HexCoordSystem::ColOdd).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_col_odd_neighbor_pos(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.hex_col_odd_north(tilemap_size),
-        north_west: tile_pos.hex_col_odd_north_west(tilemap_size),
-        west: None,
-        south_west: tile_pos.hex_col_odd_south_west(),
-        south: tile_pos.hex_col_odd_south(),
-        south_east: tile_pos.hex_col_odd_south_east(tilemap_size),
-        east: None,
-        north_east: tile_pos.hex_col_odd_north_east(tilemap_size),
-    }
-}
-
-/// Retrieves the positions of neighbors of the tile with the specified position, assuming
-/// the tile exists on a [`Hexagon`](crate::map::TilemapType::Hexagon) tilemap with
-/// coordinate system [`HexCoordSystem::ColEven`](crate::map::HexCoordSystem::ColEven).
-///
-/// Tile positions are bounded:
-///     * between `0` and `tilemap_size.x` in the `x` position,
-///     * between `0` and `tilemap_size.y` in the `y` position.
-/// Directions in the returned [`Neighbor`](crate::helpers::Neighbor) struct with tile coordinates that violate these requirements will be set to `None`.
-pub fn hex_col_even_neighbor_pos(
-    tile_pos: &TilePos,
-    tilemap_size: &TilemapSize,
-) -> Neighbors<TilePos> {
-    Neighbors {
-        north: tile_pos.hex_col_even_north(tilemap_size),
-        north_west: tile_pos.hex_col_even_north_west(tilemap_size),
-        west: None,
-        south_west: tile_pos.hex_col_even_south_west(),
-        south: tile_pos.hex_col_even_south(),
-        south_east: tile_pos.hex_col_even_south_east(tilemap_size),
-        east: None,
-        north_east: tile_pos.hex_col_even_north_east(tilemap_size),
+        north: tile_pos.north(tilemap_size),
+        north_west: tile_pos.north_west(tilemap_size),
+        west: tile_pos.west(),
+        south_west: tile_pos.south_west(),
+        south: tile_pos.south(),
+        south_east: tile_pos.south_east(tilemap_size),
+        east: tile_pos.east(tilemap_size),
+        north_east: tile_pos.north_east(tilemap_size),
     }
 }
