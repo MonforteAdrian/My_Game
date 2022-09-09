@@ -38,10 +38,10 @@ pub struct TilemapBundle {
 }
 
 // Side length of a colored quadrant (in "number of tiles").
-const QUADRANT_SIDE_LENGTH: u32 = 80;
+const QUADRANT_SIDE_LENGTH: u32 = 20;
 
 fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let texture_handle: Handle<Image> = asset_server.load("sprites/isometric-sheet.png");
+    let texture_handle: Handle<Image> = asset_server.load("sprites/cube_green.png");
 
     // In total, there will be `(QUADRANT_SIDE_LENGTH * 2) * (QUADRANT_SIDE_LENGTH * 2)` tiles.
     let total_size = TilemapSize {
@@ -66,7 +66,7 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     );
 
     fill_tilemap_rect(
-        TileTexture(1),
+        TileTexture(0),
         TilePos {
             x: QUADRANT_SIDE_LENGTH,
             y: 0,
@@ -78,7 +78,7 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     );
 
     fill_tilemap_rect(
-        TileTexture(2),
+        TileTexture(0),
         TilePos {
             x: 0,
             y: QUADRANT_SIDE_LENGTH,
@@ -90,7 +90,7 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     );
 
     fill_tilemap_rect(
-        TileTexture(3),
+        TileTexture(0),
         TilePos {
             x: QUADRANT_SIDE_LENGTH,
             y: QUADRANT_SIDE_LENGTH,
@@ -101,7 +101,7 @@ fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
         &mut tile_storage,
     );
 
-    let tile_size = TilemapTileSize { x: 64.0, y: 32.0 };
+    let tile_size = TilemapTileSize { x: 64.0, y: 64.0 };
     let grid_size = tile_size.into();
 
     commands
