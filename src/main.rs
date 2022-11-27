@@ -2,24 +2,28 @@ mod game;
 mod menu;
 mod splash;
 
-use bevy::{app::PluginGroupBuilder, asset::AssetServerSettings, prelude::*};
+use bevy::{app::PluginGroupBuilder, prelude::*};
 
 
 fn main() {
     App::new()
-        .insert_resource(WindowDescriptor {
-            title: "My Game".to_string(),
-            ..Default::default()
-        })
         // Background Color
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
         // Hot reloading assets
-        .insert_resource(AssetServerSettings {
-            watch_for_changes: true,
-            ..default()
-        })
         .add_state(AppState::Splash)
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins
+            .set(WindowPlugin {
+                window: WindowDescriptor {
+                    title: "My Game".to_string(),
+                    ..default()
+                },
+                ..default()
+            })
+            .set(AssetPlugin {
+                watch_for_changes: true,
+                ..default()
+            })
+        )
         .add_plugins(MyPlugins)
         .run();
 }
@@ -44,10 +48,10 @@ fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands
 pub struct MyPlugins;
 
 impl PluginGroup for MyPlugins {
-    fn build(&mut self, group: &mut PluginGroupBuilder) {
-        group
+    fn build(self) -> PluginGroupBuilder {
+        PluginGroupBuilder::start::<Self>()
             .add(game::GamePlugin)
             .add(menu::MenuPlugin)
-            .add(splash::SplashPlugin);
+            .add(splash::SplashPlugin)
     }
 }

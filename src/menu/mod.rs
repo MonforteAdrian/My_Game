@@ -43,7 +43,7 @@ enum MenuButtonAction {
 
 fn button_system(
     mut interaction_query: Query<
-        (&Interaction, &mut UiColor, Option<&SelectedOption>),
+        (&Interaction, &mut BackgroundColor, Option<&SelectedOption>),
         (Changed<Interaction>, With<Button>),
     >,
 ) {
@@ -91,20 +91,20 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     };
 
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 margin: UiRect::all(Val::Auto),
                 flex_direction: FlexDirection::ColumnReverse,
                 align_items: AlignItems::Center,
                 ..default()
             },
-            color: Color::CRIMSON.into(),
+            background_color: Color::CRIMSON.into(),
             ..default()
         })
         .insert(OnMainMenuScreen)
         .with_children(|parent| {
             // Display the game name
-            parent.spawn_bundle(
+            parent.spawn(
                 TextBundle::from_section(
                     "Settlers of the Honeyverse",
                     TextStyle {
@@ -124,39 +124,39 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             // - settings
             // - quit
             parent
-                .spawn_bundle(ButtonBundle {
+                .spawn(ButtonBundle {
                     style: button_style.clone(),
-                    color: NORMAL_BUTTON.into(),
+                    background_color: NORMAL_BUTTON.into(),
                     ..default()
                 })
                 .insert(MenuButtonAction::Play)
                 .with_children(|parent| {
                     let icon = asset_server.load("textures/GameIcons/right.png");
-                    parent.spawn_bundle(ImageBundle {
+                    parent.spawn(ImageBundle {
                         style: button_icon_style.clone(),
                         image: UiImage(icon),
                         ..default()
                     });
-                    parent.spawn_bundle(TextBundle::from_section(
+                    parent.spawn(TextBundle::from_section(
                         "New Game",
                         button_text_style.clone(),
                     ));
                 });
             parent
-                .spawn_bundle(ButtonBundle {
+                .spawn(ButtonBundle {
                     style: button_style,
-                    color: NORMAL_BUTTON.into(),
+                    background_color: NORMAL_BUTTON.into(),
                     ..default()
                 })
                 .insert(MenuButtonAction::Quit)
                 .with_children(|parent| {
                     let icon = asset_server.load("textures/GameIcons/exitRight.png");
-                    parent.spawn_bundle(ImageBundle {
+                    parent.spawn(ImageBundle {
                         style: button_icon_style,
                         image: UiImage(icon),
                         ..default()
                     });
-                    parent.spawn_bundle(TextBundle::from_section("Quit", button_text_style));
+                    parent.spawn(TextBundle::from_section("Quit", button_text_style));
                 });
         });
 }
