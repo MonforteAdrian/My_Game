@@ -6,7 +6,7 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_system_set(SystemSet::on_enter(GameState::MapCreation).with_system(startup));
+            .add_system(startup.in_schedule(OnEnter(GameState::MapCreation)));
     }
 }
 

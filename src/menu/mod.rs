@@ -6,22 +6,20 @@ pub struct MenuPlugin;
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_state(MenuState::Disabled)
-            .add_system_set(SystemSet::on_enter(AppState::Menu).with_system(setup))
+            .add_state::<MenuState>()
+            .add_system(setup.in_schedule(OnEnter(AppState::Menu)))
             //main
-            .add_system_set(SystemSet::on_enter(MenuState::Main).with_system(setup_menu))
-            .add_system_set(SystemSet::on_exit(MenuState::Main).with_system(despawn_screen::<OnMainMenuScreen>))
-            .add_system_set(SystemSet::on_update(AppState::Menu)
-                .with_system(menu_action)
-                .with_system(button_system)
-            );
+            .add_system(setup_menu.in_schedule(OnEnter(MenuState::Main)))
+            .add_system(despawn_screen::<OnMainMenuScreen>.in_schedule(OnExit(MenuState::Main)))
+            .add_systems((menu_action, button_system).in_set(OnUpdate(AppState::Menu)));
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum MenuState {
-    Main,
+    #[default]
     Disabled,
+    Main,
 }
 
 #[derive(Component)]
@@ -57,7 +55,7 @@ fn button_system(
     }
 }
 
-fn setup(mut menu_state: ResMut<State<MenuState>>) {
+fn setup(mut menu_state: ResMut<NextState<MenuState>>) {
     let _ = menu_state.set(MenuState::Main);
 }
 
@@ -134,7 +132,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     let icon = asset_server.load("textures/GameIcons/right.png");
                     parent.spawn(ImageBundle {
                         style: button_icon_style.clone(),
-                        image: UiImage(icon),
+                        image: UiImage::new(icon),
                         ..default()
                     });
                     parent.spawn(TextBundle::from_section(
@@ -153,7 +151,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     let icon = asset_server.load("textures/GameIcons/exitRight.png");
                     parent.spawn(ImageBundle {
                         style: button_icon_style,
-                        image: UiImage(icon),
+                        image: UiImage::new(icon),
                         ..default()
                     });
                     parent.spawn(TextBundle::from_section("Quit", button_text_style));
@@ -167,16 +165,16 @@ fn menu_action(
         (Changed<Interaction>, With<Button>),
     >,
     mut app_exit_events: EventWriter<AppExit>,
-    mut menu_state: ResMut<State<MenuState>>,
-    mut game_state: ResMut<State<AppState>>,
+    mut menu_state: ResMut<NextState<MenuState>>,
+    mut game_state: ResMut<NextState<AppState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Clicked {
             match menu_button_action {
                 MenuButtonAction::Quit => app_exit_events.send(AppExit),
                 MenuButtonAction::Play => {
-                    game_state.set(AppState::Game).unwrap();
-                    menu_state.set(MenuState::Disabled).unwrap();
+                    game_state.set(AppState::Game);
+                    menu_state.set(MenuState::Disabled);
                 }
             }
         }
