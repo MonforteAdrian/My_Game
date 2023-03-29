@@ -7,17 +7,17 @@ use bevy::{app::PluginGroupBuilder, prelude::*};
 
 fn main() {
     App::new()
-        // Background Color
-        .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
         // Hot reloading assets
         .add_state::<AppState>()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
+        .add_plugins(DefaultPlugins
+            .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "My Game".into(),
                     ..default()
                 }),
                 ..default()
             })
+            .set(ImagePlugin::default_nearest())
             .set(AssetPlugin {
                 watch_for_changes: true,
                 ..default()
