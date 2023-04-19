@@ -1,5 +1,5 @@
+use crate::{despawn_screen, loading::TextureAssets, AppState};
 use bevy::prelude::*;
-use super::{despawn_screen, AppState};
 
 // This plugin will display a splash screen with Bevy logo for 1 second before switching to the menu
 pub struct SplashPlugin;
@@ -25,8 +25,8 @@ struct OnSplashScreen;
 #[derive(Resource, Deref, DerefMut)]
 struct SplashTimer(Timer);
 
-fn splash_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let icon = asset_server.load("branding/icon.png");
+fn splash_setup(mut commands: Commands, texture_assets: Res<TextureAssets>) {
+    let icon = texture_assets.bevy.clone();
     // Display the logo
     commands
         .spawn(ImageBundle {

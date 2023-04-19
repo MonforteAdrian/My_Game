@@ -1,15 +1,15 @@
 mod camera;
 mod map;
 
-use bevy::prelude::*;
 use super::{despawn_screen, AppState};
+use crate::prelude::*;
+use bevy::prelude::*;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_state::<GameState>()
+        app.add_state::<GameState>()
             .add_plugin(camera::CameraPlugin)
             .add_plugin(map::MapPlugin)
             .add_system(setup.in_schedule(OnEnter(AppState::Game)))
@@ -30,14 +30,11 @@ enum GameState {
 struct OnGameScreen;
 
 fn setup(mut game_state: ResMut<NextState<GameState>>) {
-    let _ = game_state.set(GameState::MapCreation);
+    game_state.set(GameState::MapCreation);
 }
 
-fn game(
-    keyboard_input: Res<Input<KeyCode>>,
-    mut game_state: ResMut<NextState<AppState>>,
-) {
-    if keyboard_input.pressed(KeyCode::Escape){
+fn game(keyboard_input: Res<Input<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
+    if keyboard_input.pressed(KeyCode::Escape) {
         game_state.set(AppState::Menu);
     }
 }

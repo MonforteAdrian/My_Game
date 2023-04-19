@@ -1,12 +1,15 @@
+use crate::{
+    despawn_screen,
+    loading::{FontAssets, TextureAssets},
+    AppState,
+};
 use bevy::{app::AppExit, prelude::*};
-use super::{despawn_screen, AppState, TEXT_COLOR};
 
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_state::<MenuState>()
+        app.add_state::<MenuState>()
             .add_system(setup.in_schedule(OnEnter(AppState::Menu)))
             //main
             .add_system(setup_menu.in_schedule(OnEnter(MenuState::Main)))
@@ -14,6 +17,8 @@ impl Plugin for MenuPlugin {
             .add_systems((menu_action, button_system).in_set(OnUpdate(AppState::Menu)));
     }
 }
+
+const TEXT_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum MenuState {
@@ -56,11 +61,14 @@ fn button_system(
 }
 
 fn setup(mut menu_state: ResMut<NextState<MenuState>>) {
-    let _ = menu_state.set(MenuState::Main);
+    menu_state.set(MenuState::Main);
 }
 
-fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let font = asset_server.load("fonts/FiraSans-Bold.ttf");
+fn setup_menu(
+    mut commands: Commands,
+    texture_assets: Res<TextureAssets>,
+    font_assets: Res<FontAssets>,
+) {
     // Common style for all buttons on the screen
     let button_style = Style {
         size: Size::new(Val::Px(250.0), Val::Px(65.0)),
@@ -83,7 +91,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..default()
     };
     let button_text_style = TextStyle {
-        font: font.clone(),
+        font: font_assets.fira_sans.clone(),
         font_size: 40.0,
         color: TEXT_COLOR,
     };
@@ -106,7 +114,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextBundle::from_section(
                     "Settlers of the Honeyverse",
                     TextStyle {
-                        font: font.clone(),
+                        font: font_assets.fira_sans.clone(),
                         font_size: 80.0,
                         color: TEXT_COLOR,
                     },
@@ -129,7 +137,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 })
                 .insert(MenuButtonAction::Play)
                 .with_children(|parent| {
-                    let icon = asset_server.load("textures/GameIcons/right.png");
+                    let icon = texture_assets.arrow_right.clone();
                     parent.spawn(ImageBundle {
                         style: button_icon_style.clone(),
                         image: UiImage::new(icon),
@@ -148,7 +156,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 })
                 .insert(MenuButtonAction::Quit)
                 .with_children(|parent| {
-                    let icon = asset_server.load("textures/GameIcons/exitRight.png");
+                    let icon = texture_assets.exit_right.clone();
                     parent.spawn(ImageBundle {
                         style: button_icon_style,
                         image: UiImage::new(icon),
