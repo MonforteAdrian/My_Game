@@ -1,16 +1,11 @@
-use crate::prelude::*;
 use bevy::{input::Input, math::Vec3, prelude::*};
 
-pub struct CameraPlugin;
+pub struct ControlsPlugin;
 
-impl Plugin for CameraPlugin {
+impl Plugin for ControlsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_camera).add_system(move_camera);
+        app.add_system(move_camera);
     }
-}
-
-fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
 }
 
 pub fn move_camera(

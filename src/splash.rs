@@ -9,11 +9,11 @@ impl Plugin for SplashPlugin {
         // As this plugin is managing the splash screen, it will focus on the state `AppState::Splash`
         app
             // When entering the state, spawn everything needed for this screen
-            .add_system(splash_setup.in_schedule(OnEnter(AppState::Splash)))
+            .add_systems(OnEnter(AppState::Splash), splash_setup)
             // While in this state, run the `countdown` system
-            .add_system(countdown.in_set(OnUpdate(AppState::Splash)))
+            .add_systems(Update, countdown.run_if(in_state(AppState::Splash)))
             // When exiting the state, despawn everything that was spawned for this screen
-            .add_system(despawn_screen::<OnSplashScreen>.in_schedule(OnExit(AppState::Splash)));
+            .add_systems(OnExit(AppState::Splash), despawn_screen::<OnSplashScreen>);
     }
 }
 
@@ -34,7 +34,8 @@ fn splash_setup(mut commands: Commands, texture_assets: Res<TextureAssets>) {
                 // This will center the logo
                 margin: UiRect::all(Val::Auto),
                 // This will set the logo to be 200px wide, and auto adjust its height
-                size: Size::new(Val::Px(200.0), Val::Auto),
+                width: Val::Px(200.0),
+                height: Val::Auto,
                 ..default()
             },
             image: UiImage::new(icon),

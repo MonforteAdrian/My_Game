@@ -1,5 +1,7 @@
 mod game;
+mod helpers;
 mod loading;
+mod map;
 mod menu;
 mod splash;
 
@@ -7,11 +9,14 @@ mod prelude {
     pub(crate) use super::AppState;
     pub(crate) use crate::despawn_screen;
     pub(crate) use crate::loading::*;
+    pub(crate) use crate::menu::*;
     // pub(crate) use crate::utils::ConstHandles;
 }
 
 use crate::game::GamePlugin;
+use crate::helpers::HelpersPlugin;
 use crate::loading::LoadingPlugin;
+use crate::map::MapPlugin;
 use crate::menu::MenuPlugin;
 use crate::splash::SplashPlugin;
 
@@ -24,6 +29,7 @@ pub enum AppState {
     Loading,
     Splash,
     Menu,
+    MapCreation,
     Game,
 }
 
@@ -32,11 +38,12 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<AppState>()
-            // .add_plugin(LoadingPlugin)
-            .add_plugin(SplashPlugin)
-            .add_plugin(LoadingPlugin)
-            .add_plugin(MenuPlugin)
-            .add_plugin(GamePlugin);
+            .add_plugins(LoadingPlugin)
+            .add_plugins(SplashPlugin)
+            .add_plugins(HelpersPlugin)
+            .add_plugins(MenuPlugin)
+            .add_plugins(MapPlugin)
+            .add_plugins(GamePlugin);
     }
 }
 

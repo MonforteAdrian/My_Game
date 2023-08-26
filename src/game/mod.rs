@@ -1,8 +1,4 @@
-mod camera;
-mod map;
-
 use super::{despawn_screen, AppState};
-use crate::prelude::*;
 use bevy::prelude::*;
 
 pub struct GamePlugin;
@@ -10,11 +6,9 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>()
-            .add_plugin(camera::CameraPlugin)
-            .add_plugin(map::MapPlugin)
-            .add_system(setup.in_schedule(OnEnter(AppState::Game)))
-            .add_system(despawn_screen::<OnGameScreen>.in_schedule(OnExit(AppState::Game)))
-            .add_system(game.in_set(OnUpdate(AppState::Game)));
+            .add_systems(OnEnter(AppState::Game), setup)
+            .add_systems(OnExit(AppState::Game), despawn_screen::<OnGameScreen>)
+            .add_systems(Update, game.run_if(in_state(AppState::Game)));
     }
 }
 
@@ -22,7 +16,7 @@ impl Plugin for GamePlugin {
 enum GameState {
     #[default]
     Disabled,
-    MapCreation,
+    Pause,
     Gameplay,
 }
 
@@ -30,7 +24,7 @@ enum GameState {
 struct OnGameScreen;
 
 fn setup(mut game_state: ResMut<NextState<GameState>>) {
-    game_state.set(GameState::MapCreation);
+    game_state.set(GameState::Pause);
 }
 
 fn game(keyboard_input: Res<Input<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
