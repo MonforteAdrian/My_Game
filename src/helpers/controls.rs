@@ -4,7 +4,7 @@ pub struct ControlsPlugin;
 
 impl Plugin for ControlsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(move_camera);
+        app.add_systems(Update, move_camera);
     }
 }
 

@@ -1,4 +1,4 @@
-use bevy::{asset::ChangeWatcher, prelude::*, utils::Duration};
+use bevy::prelude::*;
 use my_game::AppPlugin;
 
 fn main() {
@@ -13,11 +13,7 @@ fn main() {
                     }),
                     ..default()
                 })
-                .set(ImagePlugin::default_nearest())
-                .set(AssetPlugin {
-                    watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
-                    ..default()
-                }),
+                .set(ImagePlugin::default_nearest()),
         )
         .add_plugins(AppPlugin)
         .run();
