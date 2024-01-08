@@ -252,7 +252,7 @@ fn dehighlight_tile(
     // Un-highlight any previously highlighted tile labels.
     for highlighted_tile_entity in preselected_tiles_q.iter() {
         if let Ok(mut texture) = tile_texture_q.get_mut(highlighted_tile_entity) {
-            *texture = TileTextureIndex(0);
+            texture.0 = 8;
             commands
                 .entity(highlighted_tile_entity)
                 .remove::<PreselectedTile>();
