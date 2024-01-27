@@ -632,15 +632,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_ecs_tilemap"
-version = "0.12.0"
-dependencies = [
- "bevy",
- "log",
- "regex",
-]
-
-[[package]]
 name = "bevy_egui"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2710,7 +2701,6 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_asset_loader",
- "bevy_ecs_tilemap",
  "bevy_mod_picking",
 ]
 

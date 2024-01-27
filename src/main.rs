@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_mod_picking::prelude::*;
 use my_game::AppPlugin;
 
 fn main() {
@@ -15,6 +16,7 @@ fn main() {
                 })
                 .set(ImagePlugin::default_nearest()),
         )
+        .add_plugins(DefaultPickingPlugins)
         .add_plugins(AppPlugin)
         .run();
 }

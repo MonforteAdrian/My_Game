@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 bevy = "0.12.0"
 bevy-inspector-egui = "0.21.0"
-bevy_ecs_tilemap = { path = "../bevy_ecs_tilemap" }
 bevy_mod_picking = "0.17.0"
 bevy_asset_loader = "0.18.0"
 

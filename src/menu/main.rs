@@ -1,3 +1,7 @@
+// This lint usually gives bad advice in the context of Bevy -- hiding complex queries behind
+// type aliases tends to obfuscate code while offering no improvement in code cleanliness.
+#![allow(clippy::type_complexity)]
+
 use bevy::{app::AppExit, prelude::*};
 
 use crate::prelude::*;
@@ -168,11 +172,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Quit,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets
-                                .icons_textures
-                                .get("exit_right")
-                                .clone()
-                                .unwrap();
+                            let icon = icons_assets.icons_textures.get("exit_right").unwrap();
                             parent.spawn(ImageBundle {
                                 style: button_icon_style,
                                 image: UiImage::new(icon.clone()),
