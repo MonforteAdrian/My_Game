@@ -130,7 +130,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Play,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets.icons_textures.get("right").clone().unwrap();
+                            let icon = icons_assets.icons_textures.get("right").unwrap();
                             parent.spawn(ImageBundle {
                                 style: button_icon_style.clone(),
                                 image: UiImage::new(icon.clone()),
@@ -151,7 +151,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Settings,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets.icons_textures.get("wrench").clone().unwrap();
+                            let icon = icons_assets.icons_textures.get("wrench").unwrap();
                             parent.spawn(ImageBundle {
                                 style: button_icon_style.clone(),
                                 image: UiImage::new(icon.clone()),

@@ -25,6 +25,7 @@ struct OnGameScreen;
 
 fn setup(mut game_state: ResMut<NextState<GameState>>) {
     game_state.set(GameState::Pause);
+    game_state.set(GameState::Gameplay);
 }
 
 fn game(keyboard_input: Res<Input<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
