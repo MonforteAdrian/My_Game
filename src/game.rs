@@ -6,7 +6,7 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<GameState>()
-            .add_systems(OnEnter(AppState::Game), setup)
+            .add_systems(OnEnter(AppState::Game), game_setup)
             .add_systems(OnExit(AppState::Game), despawn_screen::<OnGameScreen>)
             .add_systems(Update, game.run_if(in_state(AppState::Game)));
     }
@@ -23,7 +23,7 @@ enum GameState {
 #[derive(Component)]
 struct OnGameScreen;
 
-fn setup(mut game_state: ResMut<NextState<GameState>>) {
+fn game_setup(mut game_state: ResMut<NextState<GameState>>) {
     game_state.set(GameState::Pause);
     game_state.set(GameState::Gameplay);
 }

@@ -1,15 +1,15 @@
-mod audio;
-mod main;
-mod settings;
-mod video;
+mod audio_menu;
+mod main_menu;
+mod settings_menu;
+mod video_menu;
 
-use crate::prelude::*;
+use crate::{despawn_screen, AppState};
 use bevy::prelude::*;
 
-use audio::*;
-use main::*;
-use settings::*;
-use video::*;
+use audio_menu::*;
+use main_menu::*;
+use settings_menu::*;
+use video_menu::*;
 
 // This plugin manages the menu, with 5 different screens:
 // - a main menu with "New Game", "Settings", "Quit"
@@ -24,8 +24,8 @@ impl Plugin for MenuPlugin {
             // entering the `AppState::Menu` state.
             // Current screen in the menu is handled by an independent state from `AppState`
             .add_state::<MenuState>()
-            .insert_resource(video::DisplayQuality::Medium)
-            .insert_resource(audio::Volume(7))
+            .insert_resource(video_menu::DisplayQuality::Medium)
+            .insert_resource(audio_menu::Volume(7))
             .add_systems(OnEnter(AppState::Menu), menu_setup)
             // Systems to handle the main menu screen
             .add_systems(OnEnter(MenuState::Main), main_menu_setup)

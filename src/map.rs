@@ -4,11 +4,15 @@ mod settings;
 use crate::AppState;
 use bevy::prelude::*;
 
+use settings::MapSettingsBundle;
+
 pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::MapCreation), map_setup);
+        app.add_state::<MapCreationState>()
+            .add_systems(OnEnter(AppState::MapCreation), map_setup)
+            .insert_resource(MapSettingsBundle::build());
     }
 }
 
@@ -22,7 +26,11 @@ pub enum MapCreationState {
 }
 
 // Generates the initial tilemap, which is a square grid.
-fn map_setup(mut map_creation_state: ResMut<NextState<MapCreationState>>) {
+fn map_setup(
+    mut map_creation_state: ResMut<NextState<MapCreationState>>,
+    map_settings_bundle: Res<MapSettingsBundle>,
+) {
+    println!("Started the Creation of the map");
+    println!("{:?}", map_settings_bundle);
     map_creation_state.set(MapCreationState::MapSettings);
-    map_creation_state.set(MapCreationState::MapGeneration);
 }

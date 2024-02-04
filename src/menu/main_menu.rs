@@ -4,7 +4,8 @@
 
 use bevy::{app::AppExit, prelude::*};
 
-use crate::prelude::*;
+use super::*;
+use crate::prelude::IconsTextureAssets;
 
 // Tag component used to tag entities added on the main menu screen
 #[derive(Component)]
