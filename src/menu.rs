@@ -23,7 +23,7 @@ impl Plugin for MenuPlugin {
             // At start, the menu is not enabled. This will be changed in `menu_setup` when
             // entering the `AppState::Menu` state.
             // Current screen in the menu is handled by an independent state from `AppState`
-            .add_state::<MenuState>()
+            .init_state::<MenuState>()
             .insert_resource(video_menu::DisplayQuality::Medium)
             .insert_resource(audio_menu::Volume(7))
             .add_systems(OnEnter(AppState::Menu), menu_setup)

@@ -10,7 +10,7 @@ pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_state::<MapCreationState>()
+        app.init_state::<MapCreationState>()
             .add_systems(OnEnter(AppState::MapCreation), map_setup)
             .insert_resource(MapSettingsBundle::build());
     }

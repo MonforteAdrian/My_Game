@@ -5,7 +5,7 @@ pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_state::<GameState>()
+        app.init_state::<GameState>()
             .add_systems(OnEnter(AppState::Game), game_setup)
             .add_systems(OnExit(AppState::Game), despawn_screen::<OnGameScreen>)
             .add_systems(Update, game.run_if(in_state(AppState::Game)));
@@ -28,7 +28,7 @@ fn game_setup(mut game_state: ResMut<NextState<GameState>>) {
     game_state.set(GameState::Gameplay);
 }
 
-fn game(keyboard_input: Res<Input<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
+fn game(keyboard_input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
     if keyboard_input.pressed(KeyCode::Escape) {
         game_state.set(AppState::Menu);
     }
