@@ -1,4 +1,5 @@
 use super::*;
+use bevy::color::palettes::css::CRIMSON;
 use bevy::prelude::*;
 
 // Tag component used to tag entities added on the sound settings menu screen
@@ -46,7 +47,7 @@ pub fn sound_settings_menu_setup(mut commands: Commands, volume: Res<Volume>) {
                         align_items: AlignItems::Center,
                         ..default()
                     },
-                    background_color: Color::CRIMSON.into(),
+                    background_color: CRIMSON.into(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -56,7 +57,7 @@ pub fn sound_settings_menu_setup(mut commands: Commands, volume: Res<Volume>) {
                                 align_items: AlignItems::Center,
                                 ..default()
                             },
-                            background_color: Color::CRIMSON.into(),
+                            background_color: CRIMSON.into(),
                             ..default()
                         })
                         .with_children(|parent| {

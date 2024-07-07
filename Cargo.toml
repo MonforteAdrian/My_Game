@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.13.2"
-bevy-inspector-egui = "0.24.0"
-bevy_mod_picking = "0.19.0"
-bevy_asset_loader = "0.20.2"
+bevy = "0.14.0"
+bevy-inspector-egui = "0.25.0"
+bevy_mod_picking = "0.20.0"
+bevy_asset_loader = "0.21.0"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]

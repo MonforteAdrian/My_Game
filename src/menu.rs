@@ -67,7 +67,7 @@ impl Plugin for MenuPlugin {
     }
 }
 
-pub const TEXT_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+pub const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
 // State used for the current menu screen
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -80,10 +80,10 @@ pub enum MenuState {
     Disabled,
 }
 
-pub const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
-pub const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
-pub const HOVERED_PRESSED_BUTTON: Color = Color::rgb(0.25, 0.65, 0.25);
-pub const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
+pub const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
+pub const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
+pub const HOVERED_PRESSED_BUTTON: Color = Color::srgb(0.25, 0.65, 0.25);
+pub const PRESSED_BUTTON: Color = Color::srgb(0.35, 0.75, 0.35);
 
 // Tag component used to mark which setting is currently selected
 #[derive(Component)]

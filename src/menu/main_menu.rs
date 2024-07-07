@@ -6,6 +6,7 @@ use bevy::{app::AppExit, prelude::*};
 
 use super::*;
 use crate::prelude::IconsTextureAssets;
+use bevy::color::palettes::css::CRIMSON;
 
 // Tag component used to tag entities added on the main menu screen
 #[derive(Component)]
@@ -97,7 +98,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                         align_items: AlignItems::Center,
                         ..default()
                     },
-                    background_color: Color::CRIMSON.into(),
+                    background_color: CRIMSON.into(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -198,7 +199,7 @@ pub fn menu_action(
         if *interaction == Interaction::Pressed {
             match menu_button_action {
                 MenuButtonAction::Quit => {
-                    app_exit_events.send(AppExit);
+                    app_exit_events.send(AppExit::Success);
                 }
                 MenuButtonAction::Play => {
                     game_state.set(AppState::MapCreation);

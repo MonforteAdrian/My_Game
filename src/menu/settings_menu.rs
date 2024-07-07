@@ -1,4 +1,5 @@
 use super::*;
+use bevy::color::palettes::css::CRIMSON;
 use bevy::prelude::*;
 
 // Tag component used to tag entities added on the settings menu screen
@@ -43,7 +44,7 @@ pub fn settings_menu_setup(mut commands: Commands) {
                         align_items: AlignItems::Center,
                         ..default()
                     },
-                    background_color: Color::CRIMSON.into(),
+                    background_color: CRIMSON.into(),
                     ..default()
                 })
                 .with_children(|parent| {
