@@ -1,35 +1,42 @@
-use super::{despawn_screen, AppState};
+use crate::prelude::*;
 use bevy::prelude::*;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<GameState>()
-            .add_systems(OnEnter(AppState::Game), game_setup)
-            .add_systems(OnExit(AppState::Game), despawn_screen::<OnGameScreen>)
-            .add_systems(Update, game.run_if(in_state(AppState::Game)));
+        app.add_systems(OnEnter(GameState::InGame), game_setup)
+            .add_systems(
+                Update,
+                (
+                    game.run_if(in_state(GameState::InGame)),
+                    toggle_pause.run_if(in_state(GameState::InGame)),
+                ),
+            )
+            .add_systems(OnExit(GameState::InGame), despawn_screen::<OnGameScreen>);
     }
-}
-
-#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-enum GameState {
-    #[default]
-    Disabled,
-    Pause,
-    Gameplay,
 }
 
 #[derive(Component)]
 struct OnGameScreen;
 
-fn game_setup(mut game_state: ResMut<NextState<GameState>>) {
-    game_state.set(GameState::Pause);
-    game_state.set(GameState::Gameplay);
+fn game_setup() {}
+
+fn game(keyboard_input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<GameState>>) {
+    if keyboard_input.pressed(KeyCode::Escape) {
+        game_state.set(GameState::InMenu);
+    }
 }
 
-fn game(keyboard_input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<AppState>>) {
-    if keyboard_input.pressed(KeyCode::Escape) {
-        game_state.set(AppState::Menu);
+fn toggle_pause(
+    input: Res<ButtonInput<KeyCode>>,
+    current_state: Res<State<IsPaused>>,
+    mut next_state: ResMut<NextState<IsPaused>>,
+) {
+    if input.just_pressed(KeyCode::Space) {
+        next_state.set(match current_state.get() {
+            IsPaused::Running => IsPaused::Paused,
+            IsPaused::Paused => IsPaused::Running,
+        });
     }
 }

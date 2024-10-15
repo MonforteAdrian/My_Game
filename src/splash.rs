@@ -1,4 +1,4 @@
-use crate::{despawn_screen, loading::TextureAssets, AppState};
+use crate::prelude::*;
 use bevy::prelude::*;
 
 // This plugin will display a splash screen with Bevy logo for 1 second before switching to the menu
@@ -6,14 +6,14 @@ pub struct SplashPlugin;
 
 impl Plugin for SplashPlugin {
     fn build(&self, app: &mut App) {
-        // As this plugin is managing the splash screen, it will focus on the state `AppState::Splash`
+        // As this plugin is managing the splash screen, it will focus on the state `GameState::Splash`
         app
             // When entering the state, spawn everything needed for this screen
-            .add_systems(OnEnter(AppState::Splash), splash_setup)
+            .add_systems(OnEnter(GameState::Splash), splash_setup)
             // While in this state, run the `countdown` system
-            .add_systems(Update, countdown.run_if(in_state(AppState::Splash)))
+            .add_systems(Update, countdown.run_if(in_state(GameState::Splash)))
             // When exiting the state, despawn everything that was spawned for this screen
-            .add_systems(OnExit(AppState::Splash), despawn_screen::<OnSplashScreen>);
+            .add_systems(OnExit(GameState::Splash), despawn_screen::<OnSplashScreen>);
     }
 }
 
@@ -48,11 +48,11 @@ fn splash_setup(mut commands: Commands, texture_assets: Res<TextureAssets>) {
 
 // Tick the timer, and change state when finished
 fn countdown(
-    mut game_state: ResMut<NextState<AppState>>,
+    mut game_state: ResMut<NextState<GameState>>,
     time: Res<Time>,
     mut timer: ResMut<SplashTimer>,
 ) {
     if timer.tick(time.delta()).finished() {
-        game_state.set(AppState::Menu);
+        game_state.set(GameState::InMenu);
     }
 }

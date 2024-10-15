@@ -3,7 +3,7 @@ mod main_menu;
 mod settings_menu;
 mod video_menu;
 
-use crate::{despawn_screen, AppState};
+use crate::prelude::*;
 use bevy::prelude::*;
 
 use audio_menu::*;
@@ -21,12 +21,11 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
             // At start, the menu is not enabled. This will be changed in `menu_setup` when
-            // entering the `AppState::Menu` state.
-            // Current screen in the menu is handled by an independent state from `AppState`
-            .init_state::<MenuState>()
+            // entering the `GameState::Menu` state.
+            // Current screen in the menu is handled by an independent state from `GameState`
             .insert_resource(video_menu::DisplayQuality::Medium)
             .insert_resource(audio_menu::Volume(7))
-            .add_systems(OnEnter(AppState::Menu), menu_setup)
+            .add_systems(OnEnter(GameState::InMenu), menu_setup)
             // Systems to handle the main menu screen
             .add_systems(OnEnter(MenuState::Main), main_menu_setup)
             .add_systems(OnExit(MenuState::Main), despawn_screen::<OnMainMenuScreen>)
@@ -62,23 +61,12 @@ impl Plugin for MenuPlugin {
             // Common systems to all screens that handles buttons behavior
             .add_systems(
                 Update,
-                (menu_action, button_system).run_if(in_state(AppState::Menu)),
+                (menu_action, button_system).run_if(in_state(GameState::InMenu)),
             );
     }
 }
 
 pub const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
-
-// State used for the current menu screen
-#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum MenuState {
-    Main,
-    Settings,
-    SettingsDisplay,
-    SettingsSound,
-    #[default]
-    Disabled,
-}
 
 pub const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 pub const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);

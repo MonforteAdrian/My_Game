@@ -193,7 +193,7 @@ pub fn menu_action(
     >,
     mut app_exit_events: EventWriter<AppExit>,
     mut menu_state: ResMut<NextState<MenuState>>,
-    mut game_state: ResMut<NextState<AppState>>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
@@ -202,8 +202,8 @@ pub fn menu_action(
                     app_exit_events.send(AppExit::Success);
                 }
                 MenuButtonAction::Play => {
-                    game_state.set(AppState::MapCreation);
                     menu_state.set(MenuState::Disabled);
+                    game_state.set(GameState::InMapCreation);
                 }
                 MenuButtonAction::Settings => menu_state.set(MenuState::Settings),
                 MenuButtonAction::SettingsDisplay => {

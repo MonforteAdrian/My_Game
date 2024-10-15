@@ -7,15 +7,16 @@ use std::path::Path;
 
 pub struct LoadingPlugin;
 
+// TODO update the whole load assets
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(AppState::Loading).continue_to_state(AppState::Splash),
+            LoadingState::new(GameState::Loading).continue_to_state(GameState::Splash),
         )
-        .add_collection_to_loading_state::<_, FontAssets>(AppState::Loading)
-        .add_collection_to_loading_state::<_, TextureAssets>(AppState::Loading)
-        .init_resource_after_loading_state::<_, BlocksTextureAssets>(AppState::Loading)
-        .init_resource_after_loading_state::<_, IconsTextureAssets>(AppState::Loading);
+        .add_collection_to_loading_state::<_, FontAssets>(GameState::Loading)
+        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading)
+        .init_resource_after_loading_state::<_, BlocksTextureAssets>(GameState::Loading)
+        .init_resource_after_loading_state::<_, IconsTextureAssets>(GameState::Loading);
     }
 }
 

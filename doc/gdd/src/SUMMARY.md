@@ -1,0 +1,21 @@
+# Summary
+
+[Placeholder for game title](./README.md)
+
+- [Concept](./concept.md)
+- [Story](./story.md)
+- [Gameplay](./gameplay/README.md)
+  - [Colony](./gameplay/colony.md)
+  - [Exploration](./gameplay/exploration.md)
+- [Game Mechanics](./game_mechanics/README.md)
+  - [Resource Management](./game_mechanics/resource_management.md)
+  - [Building](./game_mechanics/building.md)
+  - [Enemies](./game_mechanics/enemies.md)
+  - [NPCs](./game_mechanics/npcs.md)
+  - [Event System](./game_mechanics/event_system.md)
+- [Losing](./losing.md)
+- [Art Style](./art_style.md)
+- [Music and Sound](./music_and_sound.md)
+- [Technical Description](./technical_description.md)
+- [Marketing and Founding](./marketing_and_founding.md)
+- [Localization](./localization.md)
