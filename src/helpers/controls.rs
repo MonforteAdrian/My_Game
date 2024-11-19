@@ -30,7 +30,7 @@ pub fn move_camera(
         if keyboard_input.pressed(KeyCode::KeyZ) {
             ortho.scale -= 0.1;
         }
-        if keyboard_input.pressed(KeyCode::KeyA) {
+        if keyboard_input.pressed(KeyCode::KeyQ) {
             ortho.scale += 0.1;
         }
         if ortho.scale < 0.5 {

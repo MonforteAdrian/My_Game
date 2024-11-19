@@ -1,11 +1,26 @@
 mod generation;
 mod settings;
+mod tiletype;
+
+// This is from iso
+mod chunks;
+mod layers;
+mod layout;
+mod matrix;
+mod position;
+pub use position::Position;
+mod pathfinding;
+pub use pathfinding::a_star;
 
 use crate::prelude::*;
 use bevy::prelude::*;
 
 use generation::MapGenerationPlugin;
+use layers::Layer;
 use settings::MapSettingsPlugin;
+
+/// (columns, rows, layers)
+pub const CHUNK_DIMENSIONS: (i32, i32, i32) = (12, 12, 4);
 
 pub struct WorldCreationPlugin;
 

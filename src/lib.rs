@@ -1,38 +1,42 @@
+mod components;
 mod game;
 mod helpers;
-mod loading;
-mod menu;
+mod map;
+mod menus;
 mod splash;
-mod world_creation;
 
 mod prelude {
     pub(crate) use crate::despawn_screen;
     pub(crate) use crate::helpers::GameState;
     pub(crate) use crate::helpers::IsPaused;
-    pub(crate) use crate::helpers::WorldCreationState;
     pub(crate) use crate::helpers::MenuState;
-    pub(crate) use crate::loading::*;
+    pub(crate) use crate::helpers::WorldCreationState;
 }
 
 use crate::game::GamePlugin;
 use crate::helpers::HelpersPlugin;
-use crate::loading::LoadingPlugin;
-use crate::menu::MenuPlugin;
+use crate::map::WorldCreationPlugin;
+use crate::menus::MenuPlugin;
 use crate::splash::SplashPlugin;
-use crate::world_creation::WorldCreationPlugin;
 
+#[cfg(debug_assertions)]
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::{app::App, prelude::*};
 
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(LoadingPlugin)
-            .add_plugins(SplashPlugin)
+        app.add_plugins(SplashPlugin)
             .add_plugins(HelpersPlugin)
             .add_plugins(MenuPlugin)
             .add_plugins(WorldCreationPlugin)
             .add_plugins(GamePlugin);
+
+        #[cfg(debug_assertions)]
+        {
+            app.add_plugins((FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin::default()));
+        }
     }
 }
 

@@ -25,8 +25,8 @@ struct OnSplashScreen;
 #[derive(Resource, Deref, DerefMut)]
 struct SplashTimer(Timer);
 
-fn splash_setup(mut commands: Commands, texture_assets: Res<TextureAssets>) {
-    let icon = texture_assets.bevy.clone();
+fn splash_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let icon = asset_server.load("branding/icon.png");
     // Display the logo
     commands
         .spawn(ImageBundle {

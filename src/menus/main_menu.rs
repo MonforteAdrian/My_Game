@@ -5,7 +5,6 @@
 use bevy::{app::AppExit, prelude::*};
 
 use super::*;
-use crate::prelude::IconsTextureAssets;
 use bevy::color::palettes::css::CRIMSON;
 
 // Tag component used to tag entities added on the main menu screen
@@ -48,7 +47,7 @@ pub fn setting_button<T: Resource + Component + PartialEq + Copy>(
     }
 }
 
-pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAssets>) {
+pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Common style for all buttons on the screen
     let button_style = Style {
         width: Val::Px(250.0),
@@ -132,7 +131,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Play,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets.icons_textures.get("right").unwrap();
+                            let icon = asset_server.load("icons/right.png");
                             parent.spawn(ImageBundle {
                                 style: button_icon_style.clone(),
                                 image: UiImage::new(icon.clone()),
@@ -153,7 +152,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Settings,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets.icons_textures.get("wrench").unwrap();
+                            let icon = asset_server.load("icons/wrench.png");
                             parent.spawn(ImageBundle {
                                 style: button_icon_style.clone(),
                                 image: UiImage::new(icon.clone()),
@@ -174,7 +173,7 @@ pub fn main_menu_setup(mut commands: Commands, icons_assets: Res<IconsTextureAss
                             MenuButtonAction::Quit,
                         ))
                         .with_children(|parent| {
-                            let icon = icons_assets.icons_textures.get("exit_right").unwrap();
+                            let icon = asset_server.load("icons/exit_right.png");
                             parent.spawn(ImageBundle {
                                 style: button_icon_style,
                                 image: UiImage::new(icon.clone()),

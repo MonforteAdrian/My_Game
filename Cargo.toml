@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14.1", features = ["bevy_dev_tools"]}
-bevy-inspector-egui = "0.25.2"
-bevy_asset_loader = "0.21.0"
+# TODO serde
+#bevy = { version = "0.14.2", features = ["bevy_dev_tools"] }
+bevy = { version = "0.14.2", features = ["bevy_dev_tools"] }
+#bevy-inspector-egui = "0.27.0"
 glam = "0.27.0"
-isometric = { version = "0.1.0", path = "../bevy_projects/iso" }
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
