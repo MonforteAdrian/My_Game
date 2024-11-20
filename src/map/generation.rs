@@ -6,7 +6,6 @@ use crate::{
     map::layout::Layout,
 };
 use bevy::{log, prelude::*, utils::HashMap, utils::HashSet, window::PrimaryWindow};
-use glam::uvec2;
 use std::{collections::VecDeque, ops::Neg};
 
 // TODO convert this to resources in map creation
@@ -96,7 +95,7 @@ fn map_generation_startup(
     let rows = (chunks_height / 2.0) as i32;
 
     let texture = asset_server.load("sprites/the_four_horsemen_of_the_apocalypse.png");
-    let atlas_layout = TextureAtlasLayout::from_grid(uvec2(32, 32), 2, 4, None, None);
+    let atlas_layout = TextureAtlasLayout::from_grid(UVec2::new(32, 32), 2, 4, None, None);
     let atlas_layout = atlas_layouts.add(atlas_layout);
 
     let offset_layers = TILE_SIZE.y / 2.0 * 3.0;

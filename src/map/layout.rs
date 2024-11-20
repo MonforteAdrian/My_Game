@@ -1,5 +1,5 @@
 use super::{matrix::ProjectionMatrix, Position, CHUNK_DIMENSIONS};
-use glam::{Vec2, Vec3};
+use bevy::prelude::{Vec2, Vec3};
 
 // This should be resources?
 #[derive(Debug, Clone)]
