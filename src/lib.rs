@@ -1,27 +1,44 @@
+mod camera;
 mod components;
+//mod effects;
 mod game;
 mod helpers;
 mod map;
 mod menus;
+mod raws;
+mod resources;
+mod spawner;
 mod splash;
+mod systems;
 
-mod prelude {
-    pub(crate) use crate::despawn_screen;
-    pub(crate) use crate::helpers::GameState;
-    pub(crate) use crate::helpers::IsPaused;
-    pub(crate) use crate::helpers::MenuState;
-    pub(crate) use crate::helpers::WorldCreationState;
-}
+pub(crate) use components::*;
+//pub(crate) use effects::*;
+pub(crate) use helpers::*;
+pub(crate) use map::*;
+pub(crate) use raws::*;
+pub(crate) use resources::*;
+pub(crate) use spawner::*;
 
-use crate::game::GamePlugin;
-use crate::helpers::HelpersPlugin;
-use crate::map::WorldCreationPlugin;
-use crate::menus::MenuPlugin;
-use crate::splash::SplashPlugin;
+use camera::CameraPlugin;
+//use effects::EffectsPlugin;
+use game::GamePlugin;
+// TODO to be removed helpers
+use helpers::HelpersPlugin;
+use map::WorldCreationPlugin;
+use menus::MenuPlugin;
+use raws::RawsPlugin;
+use resources::ResourcesPlugin;
+use spawner::SpawnerPlugin;
+use splash::SplashPlugin;
+use systems::SystemsPlugin;
+
+use bevy::{app::App, prelude::*};
 
 #[cfg(debug_assertions)]
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::{app::App, prelude::*};
+use bevy::{
+    dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
+    text::FontSmoothing,
+};
 
 pub struct AppPlugin;
 
@@ -29,13 +46,33 @@ impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(SplashPlugin)
             .add_plugins(HelpersPlugin)
+            .add_plugins(ResourcesPlugin)
+            .add_plugins(RawsPlugin)
+            .add_plugins(CameraPlugin)
             .add_plugins(MenuPlugin)
+            .add_plugins(SystemsPlugin)
+            .add_plugins(SpawnerPlugin)
+            //.add_plugins(EffectsPlugin)
             .add_plugins(WorldCreationPlugin)
             .add_plugins(GamePlugin);
 
         #[cfg(debug_assertions)]
         {
-            app.add_plugins((FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin::default()));
+            app.add_plugins(FpsOverlayPlugin {
+                config: FpsOverlayConfig {
+                    text_config: TextFont {
+                        // Here we define size of our overlay
+                        font_size: 16.0,
+                        // If we want, we can use a custom font
+                        font: default(),
+                        // We could also disable font smoothing,
+                        font_smoothing: FontSmoothing::default(),
+                    },
+                    // We can also change color of the overlay
+                    text_color: Color::srgb(0.0, 1.0, 0.0),
+                    enabled: true,
+                },
+            });
         }
     }
 }

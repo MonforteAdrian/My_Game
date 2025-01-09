@@ -1,0 +1,6 @@
+[
+    ItemBundle(
+        name: "Heart",
+        sprite: "sprites/items/heart_dummy.png",
+    ),
+]

@@ -3,7 +3,7 @@ mod main_menu;
 mod settings_menu;
 mod video_menu;
 
-use crate::prelude::*;
+use crate::{despawn_screen, GameState, MenuState};
 use bevy::prelude::*;
 
 use audio_menu::*;
@@ -31,38 +31,17 @@ impl Plugin for MenuPlugin {
             .add_systems(OnExit(MenuState::Main), despawn_screen::<OnMainMenuScreen>)
             // Systems to handle the settings menu screen
             .add_systems(OnEnter(MenuState::Settings), settings_menu_setup)
-            .add_systems(
-                OnExit(MenuState::Settings),
-                despawn_screen::<OnSettingsMenuScreen>,
-            )
+            .add_systems(OnExit(MenuState::Settings), despawn_screen::<OnSettingsMenuScreen>)
             // Systems to handle the display settings screen
-            .add_systems(
-                OnEnter(MenuState::SettingsDisplay),
-                display_settings_menu_setup,
-            )
-            .add_systems(
-                Update,
-                setting_button::<DisplayQuality>.run_if(in_state(MenuState::SettingsDisplay)),
-            )
-            .add_systems(
-                OnExit(MenuState::SettingsDisplay),
-                despawn_screen::<OnDisplaySettingsMenuScreen>,
-            )
+            .add_systems(OnEnter(MenuState::SettingsDisplay), display_settings_menu_setup)
+            .add_systems(Update, setting_button::<DisplayQuality>.run_if(in_state(MenuState::SettingsDisplay)))
+            .add_systems(OnExit(MenuState::SettingsDisplay), despawn_screen::<OnDisplaySettingsMenuScreen>)
             // Systems to handle the sound settings screen
             .add_systems(OnEnter(MenuState::SettingsSound), sound_settings_menu_setup)
-            .add_systems(
-                Update,
-                setting_button::<Volume>.run_if(in_state(MenuState::SettingsSound)),
-            )
-            .add_systems(
-                OnExit(MenuState::SettingsSound),
-                despawn_screen::<OnSoundSettingsMenuScreen>,
-            )
+            .add_systems(Update, setting_button::<Volume>.run_if(in_state(MenuState::SettingsSound)))
+            .add_systems(OnExit(MenuState::SettingsSound), despawn_screen::<OnSoundSettingsMenuScreen>)
             // Common systems to all screens that handles buttons behavior
-            .add_systems(
-                Update,
-                (menu_action, button_system).run_if(in_state(GameState::InMenu)),
-            );
+            .add_systems(Update, (menu_action, button_system).run_if(in_state(GameState::InMenu)));
     }
 }
 

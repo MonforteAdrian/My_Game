@@ -1,4 +1,4 @@
-use super::Position;
+use crate::Position;
 use bevy::prelude::Component;
 
 /// Layer of a chunk parameters.
@@ -38,4 +38,10 @@ impl Layer {
             .collect();
         Self { z, tiles }
     }
+}
+
+// TODO create tests
+#[cfg(test)]
+mod tests {
+    use super::*;
 }

@@ -1,0 +1,10 @@
+[
+    CreatureBundle(
+        name: "Dummy",
+        sprite: "sprites/creatures/dummy.png",
+    ),
+    CreatureBundle(
+        name: "BadDummy",
+        sprite: "sprites/creatures/bad_dummy.png",
+    ),
+]

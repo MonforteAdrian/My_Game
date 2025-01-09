@@ -49,7 +49,7 @@ pub fn setting_button<T: Resource + Component + PartialEq + Copy>(
 
 pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Common style for all buttons on the screen
-    let button_style = Style {
+    let button_node = Node {
         width: Val::Px(250.0),
         height: Val::Px(65.0),
         margin: UiRect::all(Val::Px(20.0)),
@@ -57,7 +57,7 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         align_items: AlignItems::Center,
         ..default()
     };
-    let button_icon_style = Style {
+    let button_icon_node = Node {
         width: Val::Px(30.0),
         height: Val::Auto,
         // This takes the icons out of the flexbox flow, to be positioned exactly
@@ -69,127 +69,70 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         bottom: Val::Auto,
         ..default()
     };
-    let button_text_style = TextStyle {
-        font_size: 40.0,
-        color: TEXT_COLOR,
-        ..default()
-    };
+    let button_text_font = TextFont { font_size: 40.0, ..default() };
 
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    ..default()
-                },
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 ..default()
             },
             OnMainMenuScreen,
         ))
         .with_children(|parent| {
             parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    background_color: CRIMSON.into(),
-                    ..default()
-                })
+                .spawn((
+                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    BackgroundColor(CRIMSON.into()),
+                ))
                 .with_children(|parent| {
                     // Display the game name
-                    parent.spawn(
-                        TextBundle::from_section(
-                            "Bevy Game Menu UI",
-                            TextStyle {
-                                font_size: 80.0,
-                                color: TEXT_COLOR,
-                                ..default()
-                            },
-                        )
-                        .with_style(Style {
-                            margin: UiRect::all(Val::Px(50.0)),
-                            ..default()
-                        }),
-                    );
+                    parent.spawn((
+                        Text::new("Bevy Game Menu UI"),
+                        TextFont { font_size: 67.0, ..default() },
+                        TextColor(TEXT_COLOR),
+                        Node { margin: UiRect::all(Val::Px(50.0)), ..default() },
+                    ));
 
                     // Display three buttons for each action available from the main menu:
                     // - new game
                     // - settings
                     // - quit
                     parent
-                        .spawn((
-                            ButtonBundle {
-                                style: button_style.clone(),
-                                background_color: NORMAL_BUTTON.into(),
-                                ..default()
-                            },
-                            MenuButtonAction::Play,
-                        ))
+                        .spawn((Button, button_node.clone(), BackgroundColor(NORMAL_BUTTON), MenuButtonAction::Play))
                         .with_children(|parent| {
                             let icon = asset_server.load("icons/right.png");
-                            parent.spawn(ImageBundle {
-                                style: button_icon_style.clone(),
-                                image: UiImage::new(icon.clone()),
-                                ..default()
-                            });
-                            parent.spawn(TextBundle::from_section(
-                                "New Game",
-                                button_text_style.clone(),
-                            ));
+                            parent.spawn((ImageNode::new(icon), button_icon_node.clone()));
+                            parent.spawn((Text::new("New Game"), button_text_font.clone(), TextColor(TEXT_COLOR)));
                         });
                     parent
                         .spawn((
-                            ButtonBundle {
-                                style: button_style.clone(),
-                                background_color: NORMAL_BUTTON.into(),
-                                ..default()
-                            },
+                            Button,
+                            button_node.clone(),
+                            BackgroundColor(NORMAL_BUTTON),
                             MenuButtonAction::Settings,
                         ))
                         .with_children(|parent| {
                             let icon = asset_server.load("icons/wrench.png");
-                            parent.spawn(ImageBundle {
-                                style: button_icon_style.clone(),
-                                image: UiImage::new(icon.clone()),
-                                ..default()
-                            });
-                            parent.spawn(TextBundle::from_section(
-                                "Settings",
-                                button_text_style.clone(),
-                            ));
+                            parent.spawn((ImageNode::new(icon), button_icon_node.clone()));
+                            parent.spawn((Text::new("Settings"), button_text_font.clone(), TextColor(TEXT_COLOR)));
                         });
                     parent
-                        .spawn((
-                            ButtonBundle {
-                                style: button_style,
-                                background_color: NORMAL_BUTTON.into(),
-                                ..default()
-                            },
-                            MenuButtonAction::Quit,
-                        ))
+                        .spawn((Button, button_node, BackgroundColor(NORMAL_BUTTON), MenuButtonAction::Quit))
                         .with_children(|parent| {
                             let icon = asset_server.load("icons/exit_right.png");
-                            parent.spawn(ImageBundle {
-                                style: button_icon_style,
-                                image: UiImage::new(icon.clone()),
-                                ..default()
-                            });
-                            parent.spawn(TextBundle::from_section("Quit", button_text_style));
+                            parent.spawn((ImageNode::new(icon), button_icon_node));
+                            parent.spawn((Text::new("Quit"), button_text_font, TextColor(TEXT_COLOR)));
                         });
                 });
         });
 }
 
 pub fn menu_action(
-    interaction_query: Query<
-        (&Interaction, &MenuButtonAction),
-        (Changed<Interaction>, With<Button>),
-    >,
+    interaction_query: Query<(&Interaction, &MenuButtonAction), (Changed<Interaction>, With<Button>)>,
     mut app_exit_events: EventWriter<AppExit>,
     mut menu_state: ResMut<NextState<MenuState>>,
     mut game_state: ResMut<NextState<GameState>>,

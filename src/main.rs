@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::prelude::{default, App, DefaultPlugins, ImagePlugin, PluginGroup, Window, WindowPlugin};
 use my_game::AppPlugin;
 
 fn main() {
@@ -6,10 +6,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: "My Game".into(),
-                        ..default()
-                    }),
+                    primary_window: Some(Window { title: "My Game".into(), ..default() }),
                     ..default()
                 })
                 .set(ImagePlugin::default_nearest()),

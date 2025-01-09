@@ -1,7 +1,9 @@
-use super::{matrix::ProjectionMatrix, Position, CHUNK_DIMENSIONS};
+use super::{matrix::ProjectionMatrix, CHUNK_DIMENSIONS};
+use crate::Position;
 use bevy::prelude::{Vec2, Vec3};
 
-// This should be resources?
+const TILE_SIZE: Vec2 = Vec2::splat(32.0);
+
 #[derive(Debug, Clone)]
 pub struct Layout {
     pub projection: ProjectionMatrix,
@@ -18,33 +20,16 @@ impl Layout {
         let [x, y, z] = self.projection.forward(pos.to_array_f32());
         Vec3::new(x * self.tile_size.x, y * self.tile_size.y, z) + self.origin
     }
-
-    #[must_use]
-    #[inline]
-    #[allow(clippy::cast_precision_loss)]
-    /// Computes world/pixel coordinates `pos` into isometric coordinates
-    pub fn world_pos_to_tile(&self, pos: Vec2) -> Vec<Position> {
-        (0..self.top_layer)
-            .map(move |layer| {
-                let point = Vec3::new(
-                    (pos.x - self.origin.x) / self.tile_size.x,
-                    (pos.y - self.origin.y - self.tile_size.y / 4.) / self.tile_size.y,
-                    layer as f32,
-                );
-                let [x, y, z] = self.projection.inverse(point.to_array());
-                let p = Vec3::new(x, y, z);
-                Position::round(p.to_array())
-            })
-            .collect::<Vec<Position>>()
-    }
 }
 
 impl Default for Layout {
     fn default() -> Self {
+        let offset_layers = TILE_SIZE.y / 2.0 * 3.0;
+        let offset_center_tile = TILE_SIZE.y / 4.0;
         Self {
             projection: ProjectionMatrix::default(),
-            origin: Vec3::ZERO,
-            tile_size: Vec2::ONE,
+            origin: Vec3::new(0., -(offset_layers + offset_center_tile), 0.),
+            tile_size: TILE_SIZE,
             top_layer: CHUNK_DIMENSIONS.2,
         }
     }

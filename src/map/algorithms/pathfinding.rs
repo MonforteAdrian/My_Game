@@ -1,4 +1,4 @@
-use super::Position;
+use crate::Position;
 use std::collections::{BinaryHeap, HashMap};
 
 struct Node {
@@ -28,9 +28,7 @@ impl Ord for Node {
 }
 
 fn reconstruct_path(came_from: &HashMap<Position, Position>, end: Position) -> Vec<Position> {
-    let mut path: Vec<_> =
-        std::iter::successors(Some(end), move |&current| came_from.get(&current).copied())
-            .collect();
+    let mut path: Vec<_> = std::iter::successors(Some(end), move |&current| came_from.get(&current).copied()).collect();
     path.reverse();
     path
 }
@@ -110,10 +108,7 @@ pub fn a_star(
 
     // We return early if the end is not included
     cost(end, end)?;
-    let start_node = Node {
-        coord: start,
-        score: heuristic(start) + cost(start, start)?,
-    };
+    let start_node = Node { coord: start, score: heuristic(start) + cost(start, start)? };
     let mut open = BinaryHeap::new();
     open.push(start_node);
     let mut costs = HashMap::new();
@@ -133,10 +128,7 @@ pub fn a_star(
             if !costs.contains_key(&neighbor) || costs[&neighbor] > neighbor_cost {
                 came_from.insert(neighbor, node.coord);
                 costs.insert(neighbor, neighbor_cost);
-                open.push(Node {
-                    coord: neighbor,
-                    score: neighbor_cost + heuristic(neighbor),
-                });
+                open.push(Node { coord: neighbor, score: neighbor_cost + heuristic(neighbor) });
             }
         }
     }

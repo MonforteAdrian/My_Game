@@ -1,10 +1,14 @@
-use bevy::{dev_tools::states::*, prelude::*};
+use bevy::{
+    dev_tools::states::log_transitions,
+    prelude::{App, AppExtStates, Plugin, StateSet, States, SubStates, Update},
+};
 
 pub struct StatePlugin;
 
 impl Plugin for StatePlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<GameState>()
+        app.enable_state_scoped_entities::<GameState>()
+            .init_state::<GameState>()
             .init_state::<MenuState>()
             .init_state::<WorldCreationState>()
             .add_sub_state::<IsPaused>()

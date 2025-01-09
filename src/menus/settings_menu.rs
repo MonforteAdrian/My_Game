@@ -7,7 +7,7 @@ use bevy::prelude::*;
 pub struct OnSettingsMenuScreen;
 
 pub fn settings_menu_setup(mut commands: Commands) {
-    let button_style = Style {
+    let button_node = Node {
         width: Val::Px(200.0),
         height: Val::Px(65.0),
         margin: UiRect::all(Val::Px(20.0)),
@@ -16,37 +16,25 @@ pub fn settings_menu_setup(mut commands: Commands) {
         ..default()
     };
 
-    let button_text_style = TextStyle {
-        font_size: 40.0,
-        color: TEXT_COLOR,
-        ..default()
-    };
+    let button_text_style = (TextFont { font_size: 40.0, ..default() }, TextColor(TEXT_COLOR));
 
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    ..default()
-                },
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 ..default()
             },
             OnSettingsMenuScreen,
         ))
         .with_children(|parent| {
             parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    background_color: CRIMSON.into(),
-                    ..default()
-                })
+                .spawn((
+                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    BackgroundColor(CRIMSON.into()),
+                ))
                 .with_children(|parent| {
                     for (action, text) in [
                         (MenuButtonAction::SettingsDisplay, "Display"),
@@ -54,19 +42,9 @@ pub fn settings_menu_setup(mut commands: Commands) {
                         (MenuButtonAction::BackToMainMenu, "Back"),
                     ] {
                         parent
-                            .spawn((
-                                ButtonBundle {
-                                    style: button_style.clone(),
-                                    background_color: NORMAL_BUTTON.into(),
-                                    ..default()
-                                },
-                                action,
-                            ))
+                            .spawn((Button, button_node.clone(), BackgroundColor(NORMAL_BUTTON), action))
                             .with_children(|parent| {
-                                parent.spawn(TextBundle::from_section(
-                                    text,
-                                    button_text_style.clone(),
-                                ));
+                                parent.spawn((Text::new(text), button_text_style.clone()));
                             });
                     }
                 });

@@ -1,0 +1,42 @@
+[
+    TileBundle(
+        name: "SelectedFloor",
+        sprite: "sprites/blocks/selected_floor.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "ViewshedFloor",
+        sprite: "sprites/blocks/viewshed_floor.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "GrassBlock",
+        sprite: "sprites/blocks/grass_block.png",
+        blocker: true,
+    ),
+    TileBundle(
+        name: "GrassFloor",
+        sprite: "sprites/blocks/grass_floor.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "SandBlock",
+        sprite: "sprites/blocks/sand_block.png",
+        blocker: true,
+    ),
+    TileBundle(
+        name: "SandFloor",
+        sprite: "sprites/blocks/sand_floor.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "StoneBlock",
+        sprite: "sprites/blocks/stone_block.png",
+        blocker: true,
+    ),
+    TileBundle(
+        name: "StoneFloor",
+        sprite: "sprites/blocks/stone_floor.png",
+        blocker: false,
+    ),
+]

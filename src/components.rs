@@ -1,16 +1,38 @@
-use crate::map::Position;
+use crate::Position;
 use bevy::prelude::Component;
-use std::collections::VecDeque;
+use serde::Deserialize;
+use std::collections::{HashSet, VecDeque};
 
-#[derive(Component)]
-pub struct Renderable {
-    pub sprite: String, //TODO now is the path. IMPROVE this
-}
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct Tile {}
 
-#[derive(Component)]
-pub struct Mob {}
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct Creature {}
 
-#[derive(Component)]
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct Item {}
+
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct EntityName(pub String);
+
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct Renderable(
+    pub String, //TODO now is the path. This should be the identifier of the texture
+);
+
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct CursorHighlight {}
+
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct ViewshedHighlight {}
+
+#[derive(Component, Debug, Clone, Eq, PartialEq, Default)]
 pub struct PathfindingSteps {
     pub steps: VecDeque<Position>,
+}
+
+#[derive(Component, Debug, Clone, Eq, PartialEq, Default)]
+pub struct Viewshed {
+    pub visible_tiles: HashSet<Position>,
+    pub range: u32,
 }
