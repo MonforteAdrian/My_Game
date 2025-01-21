@@ -1,4 +1,5 @@
 use super::Position;
+use std::f32::consts::TAU;
 
 impl Position {
     #[inline]
@@ -49,7 +50,7 @@ impl Position {
     ///
     /// # Example
     ///
-    /// ```rust
+    /// ```
     /// let coord = Position::new(-1, -32, -5).abs();
     /// assert_eq!(coord.x, 1);
     /// assert_eq!(coord.y, 32);
@@ -79,7 +80,7 @@ impl Position {
     ///
     /// # Example
     ///
-    /// ```rust
+    /// ```
     /// let point = [0.6, 10.2, 0.5];
     /// let coord = Position::round(point);
     /// assert_eq!(coord.x, 1);
@@ -101,6 +102,21 @@ impl Position {
 
     #[inline]
     #[must_use]
+    /// Calculates the angle in radians of [`Position`].
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let point = position(1,0,0);
+    /// let angle = point.angle();
+    /// assert_eq!(angle, 0);
+    /// ```
+    pub fn angle(&self) -> f32 {
+        ((self.y as f32).atan2(self.x as f32) + TAU) % TAU
+    }
+
+    #[inline]
+    #[must_use]
     #[allow(clippy::cast_precision_loss)]
     /// Converts `self` to an [`f32`] array as `[x, y, z]`
     pub const fn to_array_f32(self) -> [f32; 3] {
@@ -117,7 +133,7 @@ impl Position {
     /// See [`Self::length`] for the signed version
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// let coord = Position::new(10, 0);
     /// assert_eq!(coord.ulength(), 10);
     /// ```

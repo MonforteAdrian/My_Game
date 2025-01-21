@@ -4,11 +4,36 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-#bevy = { version = "0.14.2", features = ["bevy_dev_tools"] }
+#bevy-inspector-egui = "0.27.0"#bevy = { version = "0.14.2", features = ["bevy_dev_tools"] }
 bevy = { features = ["bevy_dev_tools", "trace"], path = "../bevy_testing/bevy" }
-#bevy-inspector-egui = "0.27.0"
 serde = { version = "1.0", features = ["derive"] }
 ron = "0.8"
+noise = { path = "../bevy_testing/noise-rs", features = ["images"] }
+
+# A lot of errors don't have the patience
+#[dev-dependencies.bevy]
+##version = 0.15
+#path = "../bevy_testing/bevy"
+#default-features = false
+#features = [
+#    "bevy_asset",
+#    "bevy_color",
+#    "bevy_core_pipeline",
+#    "bevy_render",
+#    "bevy_sprite",
+#    "bevy_state",
+#    "bevy_ui",
+#    "bevy_window",
+#    "bevy_winit",
+#    "multi_threaded",
+#    "png",
+#    "sysinfo_plugin",
+#    "wayland",
+#    "x11",
+#    "bevy_sprite_picking_backend",
+#    "bevy_dev_tools",
+#    "trace",
+#]
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]

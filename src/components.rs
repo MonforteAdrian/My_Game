@@ -35,4 +35,5 @@ pub struct PathfindingSteps {
 pub struct Viewshed {
     pub visible_tiles: HashSet<Position>,
     pub range: u32,
+    pub angle: u32,
 }

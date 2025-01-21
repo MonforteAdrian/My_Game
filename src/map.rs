@@ -7,13 +7,9 @@ mod layers;
 mod layout;
 mod tiletype;
 pub use layout::Layout;
-mod algorithms;
 mod matrix;
-pub use algorithms::*;
 mod position;
-pub use position::*;
-mod direction;
-pub use direction::{DirectionWay, EdgeDirection, VertexDirection};
+pub(crate) use position::*;
 
 use crate::{GameState, WorldCreationState};
 use bevy::prelude::*;

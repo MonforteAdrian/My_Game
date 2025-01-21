@@ -4,13 +4,16 @@ mod map;
 pub use map::*;
 mod states;
 pub use states::*;
+mod world_map;
+pub use world_map::*;
 
 pub struct ResourcesPlugin;
 
 impl Plugin for ResourcesPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<IsoGrid>()
-            .insert_resource(MoveTimer(Timer::from_seconds(0.2, TimerMode::Repeating)))
+            .init_resource::<WorldMap>()
+            .insert_resource(MoveTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
             .add_plugins(StatePlugin);
     }
 }

@@ -1,4 +1,4 @@
-use crate::{map::a_star, Creature, IsoGrid, PathfindingSteps, Position};
+use crate::{a_star, position, Creature, IsoGrid, PathfindingSteps, Position};
 use bevy::{input::ButtonInput, log, math::Vec3, prelude::*};
 
 pub struct ControlsPlugin;
@@ -59,8 +59,20 @@ pub fn on_click(
     match ev.button {
         PointerButton::Primary => {
             for (creature_pos, mut creature_steps) in creature_query.iter_mut() {
-                let Some(path) = a_star(*creature_pos, *pos, |_, h| {
-                    (grid.entities.contains_key(&h) && !grid.blocked_coords.contains(&h)).then_some(1)
+                let Some(path) = a_star(*creature_pos, *pos, |o, h| {
+                    if h.x == 0 || h.y == 0 {
+                        // Neighbor
+                        (grid.entities.contains_key(&h) && !grid.blocked_coords.contains(&h)).then_some(100)
+                    } else {
+                        // Diagonal
+                        (grid.entities.contains_key(&h)
+                            && !grid.blocked_coords.contains(&h)
+                            && !grid.blocked_coords.contains(&position(h.x, o.y, o.z))
+                            && !grid.blocked_coords.contains(&position(o.x, h.y, o.z)))
+                        // The diagonal move is 1.41 times the move distance to a neighbor
+                        // We use 100 times bigger to use u32 instead of float
+                        .then_some(141)
+                    }
                 }) else {
                     log::info!("No path found");
                     return;

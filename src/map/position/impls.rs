@@ -1,4 +1,4 @@
-use crate::{EdgeDirection, Position, VertexDirection};
+use crate::Position;
 use std::{
     iter::{Product, Sum},
     ops::{Add, AddAssign, BitAnd, BitOr, BitXor, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
@@ -13,23 +13,24 @@ impl Add<Self> for Position {
     }
 }
 
-impl Add<EdgeDirection> for Position {
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: EdgeDirection) -> Self::Output {
-        self.add_dir(rhs)
-    }
-}
-
-impl Add<VertexDirection> for Position {
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: VertexDirection) -> Self::Output {
-        self.add_diag_dir(rhs)
-    }
-}
+// TODO make direction to work
+//impl Add<EdgeDirection> for Position {
+//    type Output = Self;
+//
+//    #[inline]
+//    fn add(self, rhs: EdgeDirection) -> Self::Output {
+//        self.add_dir(rhs)
+//    }
+//}
+//
+//impl Add<VertexDirection> for Position {
+//    type Output = Self;
+//
+//    #[inline]
+//    fn add(self, rhs: VertexDirection) -> Self::Output {
+//        self.add_diag_dir(rhs)
+//    }
+//}
 
 impl AddAssign for Position {
     #[inline]
@@ -38,19 +39,19 @@ impl AddAssign for Position {
     }
 }
 
-impl AddAssign<EdgeDirection> for Position {
-    #[inline]
-    fn add_assign(&mut self, rhs: EdgeDirection) {
-        *self = self.add(rhs);
-    }
-}
-
-impl AddAssign<VertexDirection> for Position {
-    #[inline]
-    fn add_assign(&mut self, rhs: VertexDirection) {
-        *self = self.add(rhs);
-    }
-}
+//impl AddAssign<EdgeDirection> for Position {
+//    #[inline]
+//    fn add_assign(&mut self, rhs: EdgeDirection) {
+//        *self = self.add(rhs);
+//    }
+//}
+//
+//impl AddAssign<VertexDirection> for Position {
+//    #[inline]
+//    fn add_assign(&mut self, rhs: VertexDirection) {
+//        *self = self.add(rhs);
+//    }
+//}
 
 impl Sum for Position {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
@@ -73,23 +74,23 @@ impl Sub<Self> for Position {
     }
 }
 
-impl Sub<EdgeDirection> for Position {
-    type Output = Self;
-
-    #[inline]
-    fn sub(self, rhs: EdgeDirection) -> Self::Output {
-        self.sub(Self::from(rhs))
-    }
-}
-
-impl Sub<VertexDirection> for Position {
-    type Output = Self;
-
-    #[inline]
-    fn sub(self, rhs: VertexDirection) -> Self::Output {
-        self.sub(Self::from(rhs))
-    }
-}
+//impl Sub<EdgeDirection> for Position {
+//    type Output = Self;
+//
+//    #[inline]
+//    fn sub(self, rhs: EdgeDirection) -> Self::Output {
+//        self.sub(Self::from(rhs))
+//    }
+//}
+//
+//impl Sub<VertexDirection> for Position {
+//    type Output = Self;
+//
+//    #[inline]
+//    fn sub(self, rhs: VertexDirection) -> Self::Output {
+//        self.sub(Self::from(rhs))
+//    }
+//}
 
 impl SubAssign for Position {
     #[inline]
@@ -98,19 +99,19 @@ impl SubAssign for Position {
     }
 }
 
-impl SubAssign<EdgeDirection> for Position {
-    #[inline]
-    fn sub_assign(&mut self, rhs: EdgeDirection) {
-        *self = self.sub(rhs);
-    }
-}
-
-impl SubAssign<VertexDirection> for Position {
-    #[inline]
-    fn sub_assign(&mut self, rhs: VertexDirection) {
-        *self = self.sub(rhs);
-    }
-}
+//impl SubAssign<EdgeDirection> for Position {
+//    #[inline]
+//    fn sub_assign(&mut self, rhs: EdgeDirection) {
+//        *self = self.sub(rhs);
+//    }
+//}
+//
+//impl SubAssign<VertexDirection> for Position {
+//    #[inline]
+//    fn sub_assign(&mut self, rhs: VertexDirection) {
+//        *self = self.sub(rhs);
+//    }
+//}
 
 impl Mul<Self> for Position {
     type Output = Self;

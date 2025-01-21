@@ -1,7 +1,7 @@
 use super::{CreatureBundle, ItemBundle, TileBundle};
 use crate::{
-    on_click, Creature, CursorHighlight, EntityName, GameState, IsoGrid, Item, PathfindingSteps, Position, SpawnEntity,
-    Tile, Viewshed, ViewshedHighlight,
+    on_click, Creature, CursorHighlight, Direction, EntityName, GameState, IsoGrid, Item, PathfindingSteps, Position,
+    SpawnEntity, Tile, Viewshed, ViewshedHighlight,
 };
 use bevy::prelude::{
     warn, AssetServer, Commands, Component, Entity, EventWriter, Over, Pointer, Query, Res, ResMut, Resource, Sprite,
@@ -97,16 +97,20 @@ impl RawMaster {
                  mut commands: Commands,
                  mut spawn_event: EventWriter<SpawnEntity>,
                  pos_query: Query<&Position>,
-                 highlighted_query: Query<(Entity, &CursorHighlight)>| {
+                 highlighted_query: Query<(Entity, &Position, &CursorHighlight)>| {
                     // TODO this is bad we need something better
-                    for (entity, _) in &highlighted_query {
-                        commands.entity(entity).despawn();
-                    }
+                    let mut new_selected = HashSet::new();
                     if let Ok(pos) = pos_query.get(ev.entity()) {
+                        new_selected.insert(pos);
                         spawn_event.send(SpawnEntity {
                             name: "SelectedFloor".to_string(),
                             pos: SpawnType::AtPosition { x: pos.x, y: pos.y, z: pos.z },
                         });
+                    }
+                    for (entity, pos, _) in &highlighted_query {
+                        if !new_selected.contains(pos) {
+                            commands.entity(entity).despawn();
+                        }
                     }
                 },
             );
@@ -149,8 +153,11 @@ impl RawMaster {
                 // TODO put the range fov in the data files
                 visible_tiles: HashSet::new(),
                 range: 16,
+                angle: 120,
             });
         };
+        // Pathfinding
+        commands.entity(entity).insert(Direction::default());
         // Pathfinding
         commands.entity(entity).insert(PathfindingSteps { steps: VecDeque::new() });
 

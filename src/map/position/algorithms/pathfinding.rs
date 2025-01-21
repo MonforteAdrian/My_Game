@@ -51,9 +51,8 @@ fn reconstruct_path(came_from: &HashMap<Position, Position>, end: Position) -> V
 ///
 /// - Compute a A star with no boundaries and some forbidden tiles
 ///
-/// ```rust
+/// ```
 /// # use std::collections::HashSet;
-/// use crate::map::a_star;
 ///
 /// let start = Position::new(0, 0, 0);
 /// let end = Position::new(10, 0, 0);
@@ -67,9 +66,9 @@ fn reconstruct_path(came_from: &HashMap<Position, Position>, end: Position) -> V
 /// ```
 /// - Compute a A star with no boundaries and some biome costs
 ///
-/// ```rust
+/// ```
 /// # use std::collections::HashMap;
-/// use crate::map::a_star;
+/// use crate::*;
 ///
 /// enum Biome {
 ///     Mountain,

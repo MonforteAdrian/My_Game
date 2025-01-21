@@ -2,7 +2,7 @@ use super::*;
 use crate::{
     map::chunks::{generate_mesh_of_chunks, get_sorted_tiles},
     spawner::SpawnEntity,
-    GameState, SpawnType, WorldCreationState,
+    GameState, SpawnType, WorldCreationState, WorldMap,
 };
 use bevy::prelude::*;
 use std::ops::Neg;
@@ -27,7 +27,13 @@ fn map_generation_startup(
     mut app_state: ResMut<NextState<GameState>>,
     mut spawn_event: EventWriter<SpawnEntity>,
     window: Query<&mut Window>,
+    mut world_map: ResMut<WorldMap>,
 ) {
+    world_map.generate();
+    world_map.x_bounds = (0.0, 0.5);
+    world_map.y_bounds = (0.0, 0.5);
+    world_map.generate();
+
     // TODO remove this once you fix the get_window_to_chunks
     let window = window.single();
     let chunks_wide = (window.width() / CHUNK_SIZE.x).ceil();
@@ -48,22 +54,18 @@ fn map_generation_startup(
                 pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
             });
         }
-        //if i == 18 {
-        //    spawn_event.send(SpawnEntity {
-        //        name: "BadDummy".to_string(),
-        //        pos: SpawnType::AtPosition {
-        //            x: tile.x,
-        //            y: tile.y,
-        //            z: tile.z,
-        //        },
-        //    });
-        //}
-        if i == 19 {
+        if i == 18 {
             spawn_event.send(SpawnEntity {
-                name: "Heart".to_string(),
+                name: "BadDummy".to_string(),
                 pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
             });
         }
+        //if i == 19 {
+        //    spawn_event.send(SpawnEntity {
+        //        name: "Heart".to_string(),
+        //        pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
+        //    });
+        //}
     });
 
     // TODO this should be moved out
