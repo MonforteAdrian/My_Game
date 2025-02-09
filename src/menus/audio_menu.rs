@@ -19,7 +19,13 @@ pub fn sound_settings_menu_setup(mut commands: Commands, volume: Res<Volume>) {
         align_items: AlignItems::Center,
         ..default()
     };
-    let button_text_style = (TextFont { font_size: 40.0, ..default() }, TextColor(TEXT_COLOR));
+    let button_text_style = (
+        TextFont {
+            font_size: 40.0,
+            ..default()
+        },
+        TextColor(TEXT_COLOR),
+    );
 
     commands
         .spawn((
@@ -35,21 +41,38 @@ pub fn sound_settings_menu_setup(mut commands: Commands, volume: Res<Volume>) {
         .with_children(|parent| {
             parent
                 .spawn((
-                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    Node {
+                        flex_direction: FlexDirection::Column,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
                     BackgroundColor(CRIMSON.into()),
                 ))
                 .with_children(|parent| {
                     parent
-                        .spawn((Node { align_items: AlignItems::Center, ..default() }, BackgroundColor(CRIMSON.into())))
+                        .spawn((
+                            Node {
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            BackgroundColor(CRIMSON.into()),
+                        ))
                         .with_children(|parent| {
                             parent.spawn((
-                                Node { align_items: AlignItems::Center, ..default() },
+                                Node {
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
                                 BackgroundColor(CRIMSON.into()),
                             ));
                             for volume_setting in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] {
                                 let mut entity = parent.spawn((
                                     Button,
-                                    Node { width: Val::Px(30.0), height: Val::Px(65.0), ..button_node.clone() },
+                                    Node {
+                                        width: Val::Px(30.0),
+                                        height: Val::Px(65.0),
+                                        ..button_node.clone()
+                                    },
                                     BackgroundColor(NORMAL_BUTTON),
                                     Volume(volume_setting),
                                 ));
@@ -59,7 +82,12 @@ pub fn sound_settings_menu_setup(mut commands: Commands, volume: Res<Volume>) {
                             }
                         });
                     parent
-                        .spawn((Button, button_node, BackgroundColor(NORMAL_BUTTON), MenuButtonAction::BackToSettings))
+                        .spawn((
+                            Button,
+                            button_node,
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::BackToSettings,
+                        ))
                         .with_child((Text::new("Back"), button_text_style));
                 });
         });

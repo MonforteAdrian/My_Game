@@ -1,5 +1,5 @@
 use bevy::prelude::Resource;
-use noise::utils::{NoiseImage, NoiseMap};
+use noise::utils::NoiseMap;
 use noise::{core::worley::ReturnType, utils::*, *};
 
 #[derive(Resource, Debug)]
@@ -12,7 +12,12 @@ pub struct WorldMap {
 
 impl WorldMap {
     fn new(seed: u32, size: (usize, usize), x_bounds: (f64, f64), y_bounds: (f64, f64)) -> Self {
-        Self { seed, size, x_bounds, y_bounds }
+        Self {
+            seed,
+            size,
+            x_bounds,
+            y_bounds,
+        }
     }
 
     /// This example demonstrates how to use the noise-rs library to generate
@@ -72,7 +77,7 @@ impl WorldMap {
     /// A description for each group and subgroup can be found above the source
     /// code for that group and subgroup.
     #[allow(non_snake_case)]
-    pub fn generate(&self) {
+    pub fn generate(&self) -> NoiseMap {
         /// Frequency of the planet's continents. Higher frequency produces
         /// smaller, more numerous continents. This value is measured in radians.
         const CONTINENT_FREQUENCY: f64 = 1.0;
@@ -290,9 +295,13 @@ impl WorldMap {
         // transition.  In effect, only the higher areas of the base-continent-
         // definition subgroup become warped; the underwater and coastal areas
         // remain unaffected.
-        let continentDef_se = Select::new(baseContinentDef(self.seed), continentDef_tu2, baseContinentDef(self.seed))
-            .set_bounds(SEA_LEVEL - 0.0375, SEA_LEVEL + 1000.0375)
-            .set_falloff(0.0625);
+        let continentDef_se = Select::new(
+            baseContinentDef(self.seed),
+            continentDef_tu2,
+            baseContinentDef(self.seed),
+        )
+        .set_bounds(SEA_LEVEL - 0.0375, SEA_LEVEL + 1000.0375)
+        .set_falloff(0.0625);
 
         // 5: [Continent-definition group]: Caches the output value from the
         // clamped-continent module. This is the output value for the entire
@@ -754,7 +763,9 @@ impl WorldMap {
         // generate the detail to add to the dunes. By enabling the distance
         // algorithm, small polygonal pits are generated; the edges of the pits
         // are joined to the edges of nearby pits.
-        let badlandsSand_wo = Worley::new(self.seed + 81).set_frequency(16183.25).set_return_type(ReturnType::Distance);
+        let badlandsSand_wo = Worley::new(self.seed + 81)
+            .set_frequency(16183.25)
+            .set_return_type(ReturnType::Distance);
 
         // 4: [Scaled-dune-detail module]: This scale/bias module shrinks the dune
         // details by a large amount. This is necessary so that the subsequent
@@ -991,7 +1002,9 @@ impl WorldMap {
         // range of the output value from the peak-modulation module so that it can
         // be used as the modulator for the peak-height-multiplier module. It is
         // important that this output value is not much lower than 1.0.
-        let scaledMountainousTerrain_sb1 = ScaleBias::new(scaledMountainousTerrain_ex).set_scale(0.25).set_bias(1.0);
+        let scaledMountainousTerrain_sb1 = ScaleBias::new(scaledMountainousTerrain_ex)
+            .set_scale(0.25)
+            .set_bias(1.0);
 
         // 5: [Peak-height-multiplier module]: This multiplier module modulates the
         // heights of the mountain peaks from the base-scaled-mountainous-terrain
@@ -1195,7 +1208,9 @@ impl WorldMap {
         // 1: [Base-scaled-continent-elevations module]: This scale/bias module
         // scales the output value from the continent-definition group so that it
         // is measured in planetary elevation units.
-        let baseContinentElev_sb = ScaleBias::new(&continentDef).set_scale(CONTINENT_HEIGHT_SCALE).set_bias(0.0);
+        let baseContinentElev_sb = ScaleBias::new(&continentDef)
+            .set_scale(CONTINENT_HEIGHT_SCALE)
+            .set_bias(0.0);
 
         // 2: [Base-continent-with-oceans module]: This selector module applies the
         // elevations of the continental shelves to the base elevations of the
@@ -1341,10 +1356,13 @@ impl WorldMap {
         // from the continents-with-mountains subgroup. There is also a wide
         // transition between these two noise functions so that the badlands can blend
         // into the rest of the terrain on the continents.
-        let continentsWithBadlands_se =
-            Select::new(&continentsWithMountains, &continentsWithBadlands_ad, &continentsWithBadlands_bm)
-                .set_bounds(1.0 - BADLANDS_AMOUNT, 1001.0 - BADLANDS_AMOUNT)
-                .set_falloff(0.25);
+        let continentsWithBadlands_se = Select::new(
+            &continentsWithMountains,
+            &continentsWithBadlands_ad,
+            &continentsWithBadlands_bm,
+        )
+        .set_bounds(1.0 - BADLANDS_AMOUNT, 1001.0 - BADLANDS_AMOUNT)
+        .set_falloff(0.25);
 
         // 4: [Apply-badlands module]: This maximum-value module causes the badlands
         // to "poke out" from the rest of the terrain. It does this by ensuring
@@ -1372,8 +1390,9 @@ impl WorldMap {
         // 1: [Scaled-rivers module]: This scale/bias module scales the output value
         // from the river-positions group so that it is measured in planetary
         // elevation units and is negative; this is required for step 2.
-        let continentsWithRivers_sb =
-            ScaleBias::new(riverPositions).set_scale(RIVER_DEPTH / 2.0).set_bias(-RIVER_DEPTH / 2.0);
+        let continentsWithRivers_sb = ScaleBias::new(riverPositions)
+            .set_scale(RIVER_DEPTH / 2.0)
+            .set_bias(-RIVER_DEPTH / 2.0);
 
         // 2: [Add-rivers-to-continents module]: This addition module adds the
         // rivers to the continents-with-badlands subgroup. Because the scaled-
@@ -1388,10 +1407,13 @@ impl WorldMap {
         // continents-with-badlands subgroup is far from sea level.  Otherwise,
         // this selector module selects the output value from the add-rivers-to-
         // continents module.
-        let continentsWithRivers_se =
-            Select::new(&continentsWithBadlands, continentsWithRivers_ad, &continentsWithBadlands)
-                .set_bounds(SEA_LEVEL, CONTINENT_HEIGHT_SCALE + SEA_LEVEL)
-                .set_falloff(CONTINENT_HEIGHT_SCALE - SEA_LEVEL);
+        let continentsWithRivers_se = Select::new(
+            &continentsWithBadlands,
+            continentsWithRivers_ad,
+            &continentsWithBadlands,
+        )
+        .set_bounds(SEA_LEVEL, CONTINENT_HEIGHT_SCALE + SEA_LEVEL)
+        .set_falloff(CONTINENT_HEIGHT_SCALE - SEA_LEVEL);
 
         // 4: [Continents-with-rivers subgroup]: Caches the output value from the
         // blended-rivers-to-continents module.
@@ -1408,33 +1430,21 @@ impl WorldMap {
         //    continent-with-rivers subgroup.
         let unscaledFinalPlanet = Cache::new(continentsWithRivers);
 
-        take_snapshot(
-            &ImageRenderer::new().set_gradient(ColorGradient::new().build_terrain_gradient()).render(
-                &PlaneMapBuilder::new(&unscaledFinalPlanet)
-                    .set_size(self.size.0, self.size.1)
-                    .set_x_bounds(self.x_bounds.0, self.x_bounds.1)
-                    .set_y_bounds(self.y_bounds.0, self.y_bounds.1)
-                    .build(),
-            ),
-            format!("{}_{:?}_{:?}.png", self.seed, self.x_bounds, self.y_bounds).as_str(),
-        );
+        PlaneMapBuilder::new(&unscaledFinalPlanet)
+            .set_size(self.size.0, self.size.1)
+            .set_x_bounds(self.x_bounds.0, self.x_bounds.1)
+            .set_y_bounds(self.y_bounds.0, self.y_bounds.1)
+            .build()
     }
-}
-
-#[allow(dead_code)]
-pub fn take_snapshot(image: &NoiseImage, filename: &str) {
-    use std::{fs, path::Path};
-
-    let target = Path::new("example_images/").join(Path::new(filename));
-
-    fs::create_dir_all(target.clone().parent().expect("No parent directory found."))
-        .expect("Failed to create directories.");
-
-    image.write_to_file(&target)
 }
 
 impl Default for WorldMap {
     fn default() -> Self {
-        Self { seed: 0, size: (256, 256), x_bounds: (-2.0, 2.0), y_bounds: (-2.0, 2.0) }
+        Self {
+            seed: 0,
+            size: (64, 64),
+            x_bounds: (-2.0, 2.0),
+            y_bounds: (-2.0, 2.0),
+        }
     }
 }

@@ -1,7 +1,7 @@
 #![allow(clippy::inline_always)]
 
 use bevy::prelude::*;
-use std::{collections::HashSet, fmt::Debug};
+use std::fmt::Debug;
 
 /// Collection of algorithms
 mod algorithms;
@@ -69,8 +69,14 @@ impl Position {
     ///         \  /
     ///          \/
     /// ```
-    pub const NEIGHBORS_COORDS: [Self; 4] =
-        [Self::new(1, 0, 0), Self::new(0, 1, 0), Self::new(-1, 0, 0), Self::new(0, -1, 0)];
+    pub const NEIGHBORS_COORDS: [Self; 6] = [
+        Self::new(1, 0, 0),
+        Self::new(0, 1, 0),
+        Self::new(-1, 0, 0),
+        Self::new(0, -1, 0),
+        Self::new(0, 0, 1),
+        Self::new(0, 0, -1),
+    ];
 
     /// Positionmetric neighbor coordinates array
     ///
@@ -88,7 +94,8 @@ impl Position {
     ///         \  /
     ///          \/
     /// ```
-    pub const ALL_NEIGHBORS_COORDS: [Self; 8] = [
+    pub const ALL_NEIGHBORS_COORDS: [Self; 18] = [
+        // Z level
         Self::new(1, 0, 0),
         Self::new(1, 1, 0),
         Self::new(0, 1, 0),
@@ -97,6 +104,18 @@ impl Position {
         Self::new(-1, -1, 0),
         Self::new(0, -1, 0),
         Self::new(1, -1, 0),
+        // Z + 1
+        Self::new(0, 0, 1),
+        Self::new(1, 0, 1),
+        Self::new(0, 1, 1),
+        Self::new(-1, 0, 1),
+        Self::new(0, -1, 1),
+        // Z - 1
+        Self::new(0, 0, -1),
+        Self::new(1, 0, -1),
+        Self::new(0, 1, -1),
+        Self::new(-1, 0, -1),
+        Self::new(0, -1, -1),
     ];
 
     #[inline(always)]
@@ -117,15 +136,16 @@ impl Position {
 
     #[inline]
     #[must_use]
-    /// Retrieves all 4 direct neighbor coordinates around `self`
-    pub fn neighbors(self) -> [Self; 4] {
+    /// Retrieves all 6 direct neighbor coordinates around `self`
+    /// 4 at the same z level, 1 z+1 and 1 z-1
+    pub fn neighbors(self) -> [Self; 6] {
         Self::NEIGHBORS_COORDS.map(|n| self.const_add(n))
     }
 
     #[inline]
     #[must_use]
-    /// Retrieves all 8 neighbor coordinates around `self`
-    pub fn all_neighbors(self) -> [Self; 8] {
+    /// Retrieves all 18 neighbor coordinates around `self`
+    pub fn all_neighbors(self) -> [Self; 18] {
         Self::ALL_NEIGHBORS_COORDS.map(|n| self.const_add(n))
     }
 }

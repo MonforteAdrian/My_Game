@@ -4,6 +4,7 @@ extern crate test;
 mod camera;
 mod components;
 //mod effects;
+mod ai;
 mod game;
 mod helpers;
 mod map;
@@ -13,6 +14,7 @@ mod resources;
 mod spawner;
 mod splash;
 mod systems;
+pub use ai::*;
 
 pub(crate) use components::*;
 //pub(crate) use effects::*;
@@ -25,8 +27,6 @@ pub(crate) use spawner::*;
 use camera::CameraPlugin;
 //use effects::EffectsPlugin;
 use game::GamePlugin;
-// TODO to be removed helpers
-use helpers::HelpersPlugin;
 use map::WorldCreationPlugin;
 use menus::MenuPlugin;
 use raws::RawsPlugin;
@@ -48,7 +48,6 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(SplashPlugin)
-            .add_plugins(HelpersPlugin)
             .add_plugins(ResourcesPlugin)
             .add_plugins(RawsPlugin)
             .add_plugins(CameraPlugin)

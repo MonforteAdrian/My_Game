@@ -20,7 +20,8 @@ pub struct RawsPlugin;
 
 impl Plugin for RawsPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<RawMaster>().add_systems(OnEnter(GameState::InMapCreation), load_creatures_from_ron);
+        app.init_resource::<RawMaster>()
+            .add_systems(OnEnter(GameState::InMapCreation), load_creatures_from_ron);
     }
 }
 

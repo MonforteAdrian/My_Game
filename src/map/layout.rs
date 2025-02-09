@@ -2,7 +2,7 @@ use super::{matrix::ProjectionMatrix, CHUNK_DIMENSIONS};
 use crate::Position;
 use bevy::prelude::{Vec2, Vec3};
 
-const TILE_SIZE: Vec2 = Vec2::splat(32.0);
+pub const TILE_SIZE: Vec2 = Vec2::splat(32.0);
 
 #[derive(Debug, Clone)]
 pub struct Layout {
@@ -24,7 +24,7 @@ impl Layout {
 
 impl Default for Layout {
     fn default() -> Self {
-        let offset_layers = TILE_SIZE.y / 2.0 * 3.0;
+        let offset_layers = TILE_SIZE.y / 2.0 * (CHUNK_DIMENSIONS.2 as f32 - 1.0);
         let offset_center_tile = TILE_SIZE.y / 4.0;
         Self {
             projection: ProjectionMatrix::default(),

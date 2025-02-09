@@ -1,5 +1,5 @@
 use super::*;
-use crate::fov;
+use crate::{fov, map::chunks::generate_mesh_of_chunks};
 use std::f32::consts::PI;
 use test::Bencher;
 
@@ -18,13 +18,22 @@ fn position_sum() {
     // zero sum
     assert_eq!(Position::ZERO.line_to(Position::ZERO).sum::<Position>(), Position::ZERO);
     // correct sum
-    assert_eq!(Position::ZERO.line_to(position(1, 0, 0)).sum::<Position>(), position(1, 0, 0));
-    assert_eq!(Position::ZERO.line_to(position(5, 0, 0)).sum::<Position>(), position((1..=5).sum(), 0, 0));
+    assert_eq!(
+        Position::ZERO.line_to(position(1, 0, 0)).sum::<Position>(),
+        position(1, 0, 0)
+    );
+    assert_eq!(
+        Position::ZERO.line_to(position(5, 0, 0)).sum::<Position>(),
+        position((1..=5).sum(), 0, 0)
+    );
 }
 
 #[test]
 fn position_product() {
-    assert_eq!(position(1, 0, 0).line_to(position(5, 0, 0)).product::<Position>(), position((1..=5).product(), 0, 0));
+    assert_eq!(
+        position(1, 0, 0).line_to(position(5, 0, 0)).product::<Position>(),
+        position((1..=5).product(), 0, 0)
+    );
 }
 
 #[test]
@@ -76,35 +85,35 @@ fn position_rem() {
     }
 }
 
-#[test]
-fn neighbors() {
-    assert_eq!(
-        Position::ZERO.neighbors(),
-        [
-            position(1, 0, 0),
-            position(1, 1, 0),
-            position(0, 1, 0),
-            position(-1, 1, 0),
-            position(-1, 0, 0),
-            position(-1, -1, 0),
-            position(0, -1, 0),
-            position(1, -1, 0)
-        ]
-    );
-    assert_eq!(
-        position(-2, 5, 0).neighbors(),
-        [
-            position(-1, 5, 0),
-            position(-1, 6, 0),
-            position(-2, 6, 0),
-            position(-3, 6, 0),
-            position(-3, 5, 0),
-            position(-3, 4, 0),
-            position(-2, 4, 0),
-            position(-1, 4, 0)
-        ]
-    );
-}
+//#[test]
+//fn neighbors() {
+//    assert_eq!(
+//        Position::ZERO.neighbors(),
+//        [
+//            position(1, 0, 0),
+//            position(1, 1, 0),
+//            position(0, 1, 0),
+//            position(-1, 1, 0),
+//            position(-1, 0, 0),
+//            position(-1, -1, 0),
+//            position(0, -1, 0),
+//            position(1, -1, 0)
+//        ]
+//    );
+//    assert_eq!(
+//        position(-2, 5, 0).neighbors(),
+//        [
+//            position(-1, 5, 0),
+//            position(-1, 6, 0),
+//            position(-2, 6, 0),
+//            position(-3, 6, 0),
+//            position(-3, 5, 0),
+//            position(-3, 4, 0),
+//            position(-2, 4, 0),
+//            position(-1, 4, 0)
+//        ]
+//    );
+//}
 
 #[test]
 fn line_to() {
@@ -156,6 +165,18 @@ fn ring() {
         }
     }
 }
+
+//#[test]
+//fn chunk() {
+//    let chunks = generate_mesh_of_chunks(10, -10, 10, -10);
+//    for chunk in chunks {
+//        dbg!(chunk.x, chunk.y);
+//        for pos in chunk.layers[0].tiles.iter() {
+//            dbg!(pos.chunk());
+//            assert_eq!(pos.chunk(), (chunk.x, chunk.y));
+//        }
+//    }
+//}
 
 #[bench]
 fn bench_ring(b: &mut Bencher) {

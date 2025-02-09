@@ -1,7 +1,7 @@
 use crate::Position;
 use bevy::prelude::Component;
 use serde::Deserialize;
-use std::collections::{HashSet, VecDeque};
+use std::collections::HashSet;
 
 #[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
 pub struct Tile {}
@@ -21,15 +21,16 @@ pub struct Renderable(
 );
 
 #[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
+pub struct Health {
+    pub current: i32,
+    pub max: i32,
+}
+
+#[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
 pub struct CursorHighlight {}
 
 #[derive(Deserialize, Component, Debug, Clone, Eq, Hash, PartialEq, Default)]
 pub struct ViewshedHighlight {}
-
-#[derive(Component, Debug, Clone, Eq, PartialEq, Default)]
-pub struct PathfindingSteps {
-    pub steps: VecDeque<Position>,
-}
 
 #[derive(Component, Debug, Clone, Eq, PartialEq, Default)]
 pub struct Viewshed {

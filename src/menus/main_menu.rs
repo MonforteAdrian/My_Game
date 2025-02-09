@@ -69,7 +69,10 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         bottom: Val::Auto,
         ..default()
     };
-    let button_text_font = TextFont { font_size: 40.0, ..default() };
+    let button_text_font = TextFont {
+        font_size: 40.0,
+        ..default()
+    };
 
     commands
         .spawn((
@@ -85,16 +88,26 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .with_children(|parent| {
             parent
                 .spawn((
-                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    Node {
+                        flex_direction: FlexDirection::Column,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
                     BackgroundColor(CRIMSON.into()),
                 ))
                 .with_children(|parent| {
                     // Display the game name
                     parent.spawn((
                         Text::new("Bevy Game Menu UI"),
-                        TextFont { font_size: 67.0, ..default() },
+                        TextFont {
+                            font_size: 67.0,
+                            ..default()
+                        },
                         TextColor(TEXT_COLOR),
-                        Node { margin: UiRect::all(Val::Px(50.0)), ..default() },
+                        Node {
+                            margin: UiRect::all(Val::Px(50.0)),
+                            ..default()
+                        },
                     ));
 
                     // Display three buttons for each action available from the main menu:
@@ -102,7 +115,12 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // - settings
                     // - quit
                     parent
-                        .spawn((Button, button_node.clone(), BackgroundColor(NORMAL_BUTTON), MenuButtonAction::Play))
+                        .spawn((
+                            Button,
+                            button_node.clone(),
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::Play,
+                        ))
                         .with_children(|parent| {
                             let icon = asset_server.load("icons/right.png");
                             parent.spawn((ImageNode::new(icon), button_icon_node.clone()));
@@ -121,7 +139,12 @@ pub fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             parent.spawn((Text::new("Settings"), button_text_font.clone(), TextColor(TEXT_COLOR)));
                         });
                     parent
-                        .spawn((Button, button_node, BackgroundColor(NORMAL_BUTTON), MenuButtonAction::Quit))
+                        .spawn((
+                            Button,
+                            button_node,
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::Quit,
+                        ))
                         .with_children(|parent| {
                             let icon = asset_server.load("icons/exit_right.png");
                             parent.spawn((ImageNode::new(icon), button_icon_node));

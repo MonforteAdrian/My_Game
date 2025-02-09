@@ -1,5 +1,10 @@
 [
     TileBundle(
+        name: "SelectedBlock",
+        sprite: "sprites/blocks/selected_block.png",
+        blocker: false,
+    ),
+    TileBundle(
         name: "SelectedFloor",
         sprite: "sprites/blocks/selected_floor.png",
         blocker: false,

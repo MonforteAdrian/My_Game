@@ -1,5 +1,15 @@
-use crate::Position;
-use std::collections::{BinaryHeap, HashMap};
+use crate::{position, IsoGrid, Position};
+use bevy::prelude::Component;
+use std::collections::{BinaryHeap, HashMap, VecDeque};
+
+#[derive(Component, Debug, Clone, Eq, PartialEq, Default)]
+pub struct PathfindingSteps {
+    pub steps: VecDeque<Position>,
+}
+
+impl PathfindingSteps {
+    // implementation of utilites for pathfinding steps
+}
 
 struct Node {
     coord: Position,
@@ -107,7 +117,10 @@ pub fn a_star(
 
     // We return early if the end is not included
     cost(end, end)?;
-    let start_node = Node { coord: start, score: heuristic(start) + cost(start, start)? };
+    let start_node = Node {
+        coord: start,
+        score: heuristic(start) + cost(start, start)?,
+    };
     let mut open = BinaryHeap::new();
     open.push(start_node);
     let mut costs = HashMap::new();
@@ -127,9 +140,31 @@ pub fn a_star(
             if !costs.contains_key(&neighbor) || costs[&neighbor] > neighbor_cost {
                 came_from.insert(neighbor, node.coord);
                 costs.insert(neighbor, neighbor_cost);
-                open.push(Node { coord: neighbor, score: neighbor_cost + heuristic(neighbor) });
+                open.push(Node {
+                    coord: neighbor,
+                    score: neighbor_cost + heuristic(neighbor),
+                });
             }
         }
     }
     None
+}
+
+pub fn find_path(o_pos: &Position, d_pos: &Position, grid: &IsoGrid) -> Option<Vec<Position>> {
+    a_star(*o_pos, *d_pos, |o, h| {
+        // Implementation of blocked_coords
+        if h.x == 0 || h.y == 0 {
+            // Neighbor
+            (grid.tiles.contains_key(&h) && !grid.blocked_coords.contains(&h)).then_some(100)
+        } else {
+            // Diagonal
+            (grid.tiles.contains_key(&h)
+                && !grid.blocked_coords.contains(&h)
+                && !grid.blocked_coords.contains(&position(h.x, o.y, o.z))
+                && !grid.blocked_coords.contains(&position(o.x, h.y, o.z)))
+            // The diagonal move is 1.41 times the move distance to a neighbor
+            // We use 100 times bigger to use u32 instead of float
+            .then_some(141)
+        }
+    })
 }

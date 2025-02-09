@@ -1,5 +1,6 @@
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum TileType {
-    Wall,
+    Block,
     Floor,
 }
 
@@ -12,7 +13,7 @@ pub fn tile_walkable(tiletype: TileType) -> bool {
 
 pub fn tile_opaque(tiletype: TileType) -> bool {
     match tiletype {
-        TileType::Wall => true,
+        TileType::Block => true,
         _ => false,
     }
 }

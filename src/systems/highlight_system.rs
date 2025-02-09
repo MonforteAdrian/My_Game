@@ -20,7 +20,11 @@ pub fn viewshed_highlight_system(
             new_visible_tiles.insert(*tile);
             spawn_event.send(SpawnEntity {
                 name: "ViewshedFloor".to_string(),
-                pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
+                pos: SpawnType::AtPosition {
+                    x: tile.x,
+                    y: tile.y,
+                    z: tile.z,
+                },
             });
         }
     }

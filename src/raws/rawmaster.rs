@@ -1,7 +1,7 @@
 use super::{CreatureBundle, ItemBundle, TileBundle};
 use crate::{
-    on_click, Creature, CursorHighlight, Direction, EntityName, GameState, IsoGrid, Item, PathfindingSteps, Position,
-    SpawnEntity, Tile, Viewshed, ViewshedHighlight,
+    on_click, Creature, CursorHighlight, Direction, EntityName, GameState, Health, IsoGrid, Item, PathfindingSteps,
+    Position, SpawnEntity, Tile, Viewshed, ViewshedHighlight,
 };
 use bevy::prelude::{
     warn, AssetServer, Commands, Component, Entity, EventWriter, Over, Pointer, Query, Res, ResMut, Resource, Sprite,
@@ -36,7 +36,13 @@ impl RawMaster {
     pub fn load(&mut self) {
         let mut used_names: HashSet<String> = HashSet::new();
 
-        process_raws(&self.raws.tiles, &mut self.tile_index, &mut used_names, |tile| &tile.name, "Tile");
+        process_raws(
+            &self.raws.tiles,
+            &mut self.tile_index,
+            &mut used_names,
+            |tile| &tile.name,
+            "Tile",
+        );
         process_raws(
             &self.raws.creatures,
             &mut self.creature_index,
@@ -44,7 +50,13 @@ impl RawMaster {
             |creature| &creature.name,
             "Creature",
         );
-        process_raws(&self.raws.items, &mut self.item_index, &mut used_names, |item| &item.name, "Item");
+        process_raws(
+            &self.raws.items,
+            &mut self.item_index,
+            &mut used_names,
+            |item| &item.name,
+            "Item",
+        );
     }
 
     pub fn spawn_named_tile(
@@ -65,32 +77,56 @@ impl RawMaster {
         // Name
         commands.entity(entity).insert(EntityName(tile_template.name.clone()));
         // Sprite
-        commands.entity(entity).insert(Sprite::from_image(asset_server.load(tile_template.sprite.clone())));
+        commands
+            .entity(entity)
+            .insert(Sprite::from_image(asset_server.load(tile_template.sprite.clone())));
         // Position
         commands.entity(entity).insert(spawn_position(pos));
         // Transform
         if let SpawnType::AtPosition { x, y, z } = pos {
             let coord = current_map.layout.tile_to_world_pos(Position { x, y, z });
-            current_map.entities.insert(Position { x, y, z }, entity);
+            current_map.tiles.insert(Position { x, y, z }, entity);
+            //commands.entity(entity).with_children(|b| {
+            //    b.spawn((
+            //        Text2d(format!("{},{}", x, y)),
+            //        TextColor(Color::BLACK),
+            //        TextFont { font_size: 6.0, ..default() },
+            //        Transform::from_xyz(0.0, 8.0, 10.0),
+            //    ));
+            //});
             if tile_template.blocker {
                 current_map.blocked_coords.insert(Position { x, y, z });
             }
-            if tile_template.name == "SelectedFloor" {
-                commands.entity(entity).insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 1.002));
+            if tile_template.name == "SelectedBlock" {
+                commands.entity(entity).insert(Transform::from_xyz(
+                    coord.x,
+                    coord.y,
+                    coord.y.neg() / 100.0 + coord.z + 0.002,
+                ));
             } else if tile_template.name == "ViewshedFloor" {
-                commands.entity(entity).insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 1.001));
+                commands.entity(entity).insert(Transform::from_xyz(
+                    coord.x,
+                    coord.y,
+                    ((coord.y.neg() as f32) / 100.0) + coord.z + 0.001,
+                ));
             } else {
-                commands.entity(entity).insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 1.));
+                commands.entity(entity).insert(Transform::from_xyz(
+                    coord.x,
+                    coord.y,
+                    ((coord.y.neg() as f32) / 100.0) + coord.z,
+                ));
             }
         }
-        if tile_template.name == "SelectedFloor" {
+        if tile_template.name == "SelectedBlock" {
             commands.entity(entity).insert(CursorHighlight {});
         } else {
             if tile_template.name == "ViewshedFloor" {
                 commands.entity(entity).insert(ViewshedHighlight {});
             }
             // Pathfinding
-            commands.entity(entity).insert(PathfindingSteps { steps: VecDeque::new() });
+            commands
+                .entity(entity)
+                .insert(PathfindingSteps { steps: VecDeque::new() });
             // Hovering Observers
             commands.entity(entity).observe(
                 |ev: Trigger<Pointer<Over>>,
@@ -103,8 +139,12 @@ impl RawMaster {
                     if let Ok(pos) = pos_query.get(ev.entity()) {
                         new_selected.insert(pos);
                         spawn_event.send(SpawnEntity {
-                            name: "SelectedFloor".to_string(),
-                            pos: SpawnType::AtPosition { x: pos.x, y: pos.y, z: pos.z },
+                            name: "SelectedBlock".to_string(),
+                            pos: SpawnType::AtPosition {
+                                x: pos.x,
+                                y: pos.y,
+                                z: pos.z,
+                            },
                         });
                     }
                     for (entity, pos, _) in &highlighted_query {
@@ -125,7 +165,7 @@ impl RawMaster {
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
-        current_map: &ResMut<IsoGrid>,
+        current_map: &mut ResMut<IsoGrid>,
         key: String,
         pos: SpawnType,
     ) -> Entity {
@@ -137,29 +177,45 @@ impl RawMaster {
         // Marker
         commands.entity(entity).insert(Creature {});
         // Name
-        commands.entity(entity).insert(EntityName(creature_template.name.clone()));
+        commands
+            .entity(entity)
+            .insert(EntityName(creature_template.name.clone()));
         // Sprite
-        commands.entity(entity).insert(Sprite::from_image(asset_server.load(creature_template.sprite.clone())));
+        commands
+            .entity(entity)
+            .insert(Sprite::from_image(asset_server.load(creature_template.sprite.clone())));
         // Position
         commands.entity(entity).insert(spawn_position(pos));
 
         // Place in the world
         if let SpawnType::AtPosition { x, y, z } = pos {
             let coord = current_map.layout.tile_to_world_pos(Position { x, y, z });
+            current_map.entities.insert(Position::new(x, y, z), entity);
             // Transform
-            commands.entity(entity).insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 2.002));
+            commands.entity(entity).insert(Transform::from_xyz(
+                coord.x,
+                coord.y,
+                coord.y.neg() / 100.0 + coord.z + 0.003,
+            ));
             // Viewshed only if the creature is AtPosition for now think about this later
             commands.entity(entity).insert(Viewshed {
                 // TODO put the range fov in the data files
                 visible_tiles: HashSet::new(),
-                range: 16,
-                angle: 120,
+                range: creature_template.view_range,
+                angle: creature_template.view_angle,
             });
         };
+        // Health
+        commands.entity(entity).insert(Health {
+            current: creature_template.max_health,
+            max: creature_template.max_health,
+        });
         // Pathfinding
         commands.entity(entity).insert(Direction::default());
         // Pathfinding
-        commands.entity(entity).insert(PathfindingSteps { steps: VecDeque::new() });
+        commands
+            .entity(entity)
+            .insert(PathfindingSteps { steps: VecDeque::new() });
 
         entity
     }
@@ -182,13 +238,17 @@ impl RawMaster {
         // Name
         commands.entity(entity).insert(EntityName(item_template.name.clone()));
         // Sprite
-        commands.entity(entity).insert(Sprite::from_image(asset_server.load(item_template.sprite.clone())));
+        commands
+            .entity(entity)
+            .insert(Sprite::from_image(asset_server.load(item_template.sprite.clone())));
         // Position
         commands.entity(entity).insert(spawn_position(pos));
         // Transform
         if let SpawnType::AtPosition { x, y, z } = pos {
             let coord = current_map.layout.tile_to_world_pos(Position { x, y, z });
-            commands.entity(entity).insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 2.));
+            commands
+                .entity(entity)
+                .insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 2.));
         }
 
         entity

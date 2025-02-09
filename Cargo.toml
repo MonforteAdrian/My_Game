@@ -4,11 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-#bevy-inspector-egui = "0.27.0"#bevy = { version = "0.14.2", features = ["bevy_dev_tools"] }
-bevy = { features = ["bevy_dev_tools", "trace"], path = "../bevy_testing/bevy" }
+#bevy = { features = ["bevy_dev_tools"], path = "../bevy_testing/bevy" }
+bevy = { features = ["bevy_dev_tools"], version = "0.15.1" }
+bevy-inspector-egui = "0.29.1"
+
 serde = { version = "1.0", features = ["derive"] }
 ron = "0.8"
 noise = { path = "../bevy_testing/noise-rs", features = ["images"] }
+rand = "0.9"
 
 # A lot of errors don't have the patience
 #[dev-dependencies.bevy]
@@ -42,7 +45,3 @@ opt-level = 1
 # Enable hight optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
-
-# This is for flamegraph to show debug simbols on release
-[profile.release]
-debug = true

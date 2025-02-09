@@ -10,7 +10,11 @@ impl Position {
     ///
     /// [`Add`]: std::ops::Add
     pub const fn const_add(self, other: Self) -> Self {
-        Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z }
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
     }
 
     #[inline]
@@ -21,7 +25,11 @@ impl Position {
     ///
     /// [`Sub`]: std::ops::Sub
     pub const fn const_sub(self, rhs: Self) -> Self {
-        Self { x: self.x - rhs.x, y: self.y - rhs.y, z: self.z - rhs.z }
+        Self {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
     }
 
     #[inline]
@@ -33,7 +41,11 @@ impl Position {
     ///
     /// [`Neg`]: std::ops::Neg
     pub const fn const_neg(self) -> Self {
-        Self { x: -self.x, y: -self.y, z: self.z }
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: self.z,
+        }
     }
 
     /// Shift constant used for [Position] operations
@@ -57,7 +69,11 @@ impl Position {
     /// assert_eq!(coord.z, 5);
     /// ```
     pub const fn abs(self) -> Self {
-        Self { x: self.x.abs(), y: self.y.abs(), z: self.z.abs() }
+        Self {
+            x: self.x.abs(),
+            y: self.y.abs(),
+            z: self.z.abs(),
+        }
     }
 
     #[inline]
@@ -68,7 +84,11 @@ impl Position {
     ///  - `1` if the number is positive
     ///  - `-1` if the number is negative
     pub const fn signum(self) -> Self {
-        Self { x: self.x.signum(), y: self.y.signum(), z: self.z.signum() }
+        Self {
+            x: self.x.signum(),
+            y: self.y.signum(),
+            z: self.z.signum(),
+        }
     }
 
     #[inline]
@@ -150,11 +170,21 @@ impl Position {
 
     #[inline]
     #[must_use]
-    /// Computes the distance from `self` to `rhs` in hexagonal space as an
+    /// Computes the distance from `self` to `rhs` as an
     /// unsigned integer
     ///
     /// See [`Self::distance_to`] for the signed version
     pub const fn unsigned_distance_to(self, rhs: Self) -> u32 {
         self.const_sub(rhs).ulength()
+    }
+
+    #[inline]
+    #[must_use]
+    /// Computes the neighbor direction from `self` to `rhs`
+    pub fn direction_to_neighbor(self, rhs: Self) -> Option<u8> {
+        self.all_neighbors()
+            .iter()
+            .position(|&neighbor| neighbor == rhs)
+            .map(|i| i as u8)
     }
 }

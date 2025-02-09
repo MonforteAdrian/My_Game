@@ -3,10 +3,14 @@ mod generation;
 mod settings;
 
 mod chunks;
+pub use chunks::*;
 mod layers;
+pub(crate) use layers::TileData;
 mod layout;
+pub(crate) use layout::TILE_SIZE;
 mod tiletype;
 pub use layout::Layout;
+pub(crate) use tiletype::TileType;
 mod matrix;
 mod position;
 pub(crate) use position::*;
@@ -17,9 +21,6 @@ use bevy::prelude::*;
 use generation::MapGenerationPlugin;
 use layers::Layer;
 use settings::MapSettingsPlugin;
-
-/// (columns, rows, layers)
-pub const CHUNK_DIMENSIONS: (i32, i32, i32) = (12, 12, 4);
 
 pub struct WorldCreationPlugin;
 

@@ -1,5 +1,5 @@
 use super::PRECOMPUTED_RINGS;
-use crate::{ExactSizePositionIterator, Position};
+use crate::{ExactSizePositionIterator, Position, CHUNK_DIMENSIONS};
 
 impl Position {
     #[must_use]
@@ -15,7 +15,9 @@ impl Position {
     #[must_use]
     /// Retrieves points within a cone defined by `start_angle` and `end_angle` in a given `radius` ring.
     pub fn cone(self, radius: u32, direction: f32, angle: f32) -> impl Iterator<Item = Self> {
-        let ring = PRECOMPUTED_RINGS[radius as usize].as_ref().expect("radius out of bounds");
+        let ring = PRECOMPUTED_RINGS[radius as usize]
+            .as_ref()
+            .expect("radius out of bounds");
         let ring_len = ring.len() as i32;
 
         // Convert angles to fixed-point (scaled integers)
@@ -31,6 +33,7 @@ impl Position {
     // TODO when we do 3d
     // spheres
     // spherical sector
+
     #[allow(clippy::cast_precision_loss)]
     #[must_use]
     /// Computes all coordinates in a line from `self` to `other`.
@@ -69,5 +72,25 @@ impl Position {
             Some(p)
         }));
         ExactSizePositionIterator { iter, count }
+    }
+
+    /// Computes the chunk coordinates of a given [`Position`] `self`
+    #[must_use]
+    pub fn chunk(&self) -> (i32, i32) {
+        let chunk_side = CHUNK_DIMENSIONS.0;
+        (
+            (self.x - 1 - self.y + chunk_side).div_euclid(chunk_side * 2),
+            (self.y + self.x + chunk_side / 2).div_euclid(chunk_side),
+        )
+    }
+
+    /// Computes the absolute coordinates of a given [`Position`]`self` relative to a chunk
+    #[must_use]
+    pub fn to_absolute(&mut self, chunk: (i32, i32)) {
+        let chunk_side = CHUNK_DIMENSIONS.0;
+        // Compute chunk offsets
+        let chunk_x_offset = chunk.0 * chunk_side + chunk.1 * chunk_side / 2;
+        let chunk_y_offset = -chunk.0 * chunk_side + chunk.1 * chunk_side / 2;
+        *self += Position::new(chunk_x_offset, chunk_y_offset, 0);
     }
 }

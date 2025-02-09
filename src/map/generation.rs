@@ -1,6 +1,6 @@
 use super::*;
 use crate::{
-    map::chunks::{generate_mesh_of_chunks, get_sorted_tiles},
+    map::chunks::{generate_mesh_of_chunks, get_sorted_tiles, split_map},
     spawner::SpawnEntity,
     GameState, SpawnType, WorldCreationState, WorldMap,
 };
@@ -8,14 +8,20 @@ use bevy::prelude::*;
 use std::ops::Neg;
 
 // TODO convert this to resources in map creation
-const CHUNK_SIZE: Vec2 = Vec2::new(32.0 * CHUNK_DIMENSIONS.0 as f32, 32.0 * (CHUNK_DIMENSIONS.1 as f32 / 4.0));
+const CHUNK_SIZE: Vec2 = Vec2::new(
+    32.0 * CHUNK_DIMENSIONS.0 as f32,
+    32.0 * (CHUNK_DIMENSIONS.1 as f32 / 4.0),
+);
 
 pub struct MapGenerationPlugin;
 
 impl Plugin for MapGenerationPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(WorldCreationState::MapGeneration), map_generation_startup)
-            .add_systems(OnExit(WorldCreationState::MapGeneration), crate::despawn_screen::<MapGenerationScreen>);
+            .add_systems(
+                OnExit(WorldCreationState::MapGeneration),
+                crate::despawn_screen::<MapGenerationScreen>,
+            );
     }
 }
 
@@ -26,47 +32,74 @@ fn map_generation_startup(
     mut map_creation_state: ResMut<NextState<WorldCreationState>>,
     mut app_state: ResMut<NextState<GameState>>,
     mut spawn_event: EventWriter<SpawnEntity>,
-    window: Query<&mut Window>,
-    mut world_map: ResMut<WorldMap>,
+    //window: Query<&mut Window>,
+    world_map: Res<WorldMap>,
 ) {
-    world_map.generate();
-    world_map.x_bounds = (0.0, 0.5);
-    world_map.y_bounds = (0.0, 0.5);
-    world_map.generate();
+    let noise_map = world_map.generate();
 
-    // TODO remove this once you fix the get_window_to_chunks
-    let window = window.single();
-    let chunks_wide = (window.width() / CHUNK_SIZE.x).ceil();
-    let chunks_height = (window.height() / CHUNK_SIZE.y).ceil();
-    let cols = (chunks_wide / 2.0) as i32;
-    let rows = (chunks_height / 2.0) as i32;
+    // TODO to be used later in conjuction with noise map
+    //let window = window.single();
+    //let chunks_wide = (window.width() / CHUNK_SIZE.x).ceil();
+    //let chunks_height = (window.height() / CHUNK_SIZE.y).ceil();
+    //let cols = (chunks_wide / 2.0) as i32;
+    //let rows = (chunks_height / 2.0) as i32;
 
-    // Generate the tiles and spawn them
-    //let chunks = generate_mesh_of_chunks(cols, cols.neg(), rows, rows.neg());
-    // Not full screen to see depth
-    let chunks = generate_mesh_of_chunks(1, -1, 1, -1);
-    get_sorted_tiles(chunks).into_iter().enumerate().for_each(|(i, tile)| {
-        let name = if i % 11 == 0 { "GrassBlock".to_string() } else { "StoneFloor".to_string() };
-        spawn_event.send(SpawnEntity { name, pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z } });
-        if i == 15 {
-            spawn_event.send(SpawnEntity {
-                name: "Dummy".to_string(),
-                pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
-            });
-        }
-        if i == 18 {
-            spawn_event.send(SpawnEntity {
-                name: "BadDummy".to_string(),
-                pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
-            });
-        }
-        //if i == 19 {
-        //    spawn_event.send(SpawnEntity {
-        //        name: "Heart".to_string(),
-        //        pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
-        //    });
-        //}
+    let chunks = split_map(&noise_map);
+    //let chunks = generate_mesh_of_chunks(1, -1, 1, -1);
+    //let chunks = generate_mesh_of_chunks(0, 0, 0, 0);
+    get_sorted_tiles(&chunks).into_iter().for_each(|tile| {
+        // Standard one level with obstacles
+        //let name = if i % 11 == 0 { "GrassBlock".to_string() } else { "StoneFloor".to_string() };
+
+        // Checkboard pattern
+        //let (chunk_x, chunk_y) = tile.chunk();
+        //let name = if (chunk_x + chunk_y) % 2 == 0 { "GrassBlock".to_string() } else { "StoneBlock".to_string() };
+
+        // z levels
+        let material = match tile.pos.z {
+            ..1 => "Stone".to_string(),
+            1..2 => "Sand".to_string(),
+            _ => "Grass".to_string(),
+        };
+        let style = match tile.tile_type {
+            TileType::Block => "Block".to_string(),
+            TileType::Floor => "Floor".to_string(),
+        };
+        let name = format!("{}{}", material, style).to_string();
+        spawn_event.send(SpawnEntity {
+            name,
+            pos: SpawnType::AtPosition {
+                x: tile.pos.x,
+                y: tile.pos.y,
+                z: tile.pos.z,
+            },
+        });
     });
+
+    let x = 0;
+    let y = 0;
+    let z = chunks
+        .get(&position(x, y, 0).chunk())
+        .expect("extected to find a chunk")
+        .find_top_layer(&position(x, y, 0));
+    spawn_event.send(SpawnEntity {
+        name: "Dummy".to_string(),
+        pos: SpawnType::AtPosition { x, y, z },
+    });
+    let x = 10;
+    let y = 10;
+    let z = chunks
+        .get(&position(x, y, 0).chunk())
+        .expect("extected to find a chunk")
+        .find_top_layer(&position(x, y, 0));
+    spawn_event.send(SpawnEntity {
+        name: "BadDummy".to_string(),
+        pos: SpawnType::AtPosition { x, y, z },
+    });
+    //spawn_event.send(SpawnEntity {
+    //    name: "Heart".to_string(),
+    //    pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
+    //});
 
     // TODO this should be moved out
     map_creation_state.set(WorldCreationState::Disabled);

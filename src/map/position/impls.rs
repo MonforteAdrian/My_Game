@@ -118,7 +118,11 @@ impl Mul<Self> for Position {
 
     #[inline]
     fn mul(self, rhs: Self) -> Self::Output {
-        Self { x: self.x.mul(rhs.x), y: self.y.mul(rhs.y), z: self.z.mul(rhs.z) }
+        Self {
+            x: self.x.mul(rhs.x),
+            y: self.y.mul(rhs.y),
+            z: self.z.mul(rhs.z),
+        }
     }
 }
 
@@ -146,9 +150,21 @@ impl Div<Self> for Position {
     #[inline]
     fn div(self, rhs: Self) -> Self::Output {
         Self {
-            x: if rhs.x != 0 && self.x != 0 { self.x.div(rhs.x) } else { self.x },
-            y: if rhs.y != 0 && self.y != 0 { self.y.div(rhs.y) } else { self.y },
-            z: if rhs.z != 0 && self.z != 0 { self.z.div(rhs.z) } else { self.z },
+            x: if rhs.x != 0 && self.x != 0 {
+                self.x.div(rhs.x)
+            } else {
+                self.x
+            },
+            y: if rhs.y != 0 && self.y != 0 {
+                self.y.div(rhs.y)
+            } else {
+                self.y
+            },
+            z: if rhs.z != 0 && self.z != 0 {
+                self.z.div(rhs.z)
+            } else {
+                self.z
+            },
         }
     }
 }
@@ -189,7 +205,11 @@ impl BitAnd for Position {
     type Output = Self;
     #[inline]
     fn bitand(self, rhs: Self) -> Self::Output {
-        Self { x: self.x.bitand(rhs.x), y: self.y.bitand(rhs.y), z: self.z.bitand(rhs.z) }
+        Self {
+            x: self.x.bitand(rhs.x),
+            y: self.y.bitand(rhs.y),
+            z: self.z.bitand(rhs.z),
+        }
     }
 }
 
@@ -197,7 +217,11 @@ impl BitOr for Position {
     type Output = Self;
     #[inline]
     fn bitor(self, rhs: Self) -> Self::Output {
-        Self { x: self.x.bitor(rhs.x), y: self.y.bitor(rhs.y), z: self.z.bitor(rhs.z) }
+        Self {
+            x: self.x.bitor(rhs.x),
+            y: self.y.bitor(rhs.y),
+            z: self.z.bitor(rhs.z),
+        }
     }
 }
 
@@ -205,6 +229,10 @@ impl BitXor for Position {
     type Output = Self;
     #[inline]
     fn bitxor(self, rhs: Self) -> Self::Output {
-        Self { x: self.x.bitxor(rhs.x), y: self.y.bitxor(rhs.y), z: self.z.bitxor(rhs.z) }
+        Self {
+            x: self.x.bitxor(rhs.x),
+            y: self.y.bitxor(rhs.y),
+            z: self.z.bitxor(rhs.z),
+        }
     }
 }

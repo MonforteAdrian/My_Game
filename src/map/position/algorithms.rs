@@ -1,5 +1,5 @@
 mod pathfinding;
-pub use pathfinding::a_star;
+pub use pathfinding::*;
 mod fov;
 pub use fov::fov;
 mod little_algorithms;

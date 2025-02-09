@@ -8,7 +8,10 @@ impl Plugin for GamePlugin {
         app.add_systems(OnEnter(GameState::InGame), game_setup)
             .add_systems(
                 Update,
-                (game.run_if(in_state(GameState::InGame)), toggle_pause.run_if(in_state(GameState::InGame))),
+                (
+                    game.run_if(in_state(GameState::InGame)),
+                    toggle_pause.run_if(in_state(GameState::InGame)),
+                ),
             )
             .add_systems(OnExit(GameState::InGame), crate::despawn_screen::<OnGameScreen>);
     }

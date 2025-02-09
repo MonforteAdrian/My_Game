@@ -13,11 +13,8 @@ impl Plugin for ResourcesPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<IsoGrid>()
             .init_resource::<WorldMap>()
-            .insert_resource(MoveTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
+            // configure our fixed timestep schedule to run twenty times per second
+            .insert_resource(Time::<Fixed>::from_seconds(0.05))
             .add_plugins(StatePlugin);
     }
 }
-
-// TODO there is probably a built in solution for this in bevy investigate
-#[derive(Resource)]
-pub struct MoveTimer(pub Timer);

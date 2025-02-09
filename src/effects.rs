@@ -7,22 +7,21 @@ pub struct EffectsPlugin;
 
 impl Plugin for EffectsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<EffectEvent>()
-            .add_systems(Update, run_effects);
+        app.add_event::<EffectEvent>().add_systems(Update, run_effects);
     }
 }
 
 #[derive(Event)]
 pub struct EffectEvent(EffectSpawner);
 
-pub enum EffectType {
-    Damage { amount: i32 },
-}
-
 pub struct EffectSpawner {
     pub creator: Option<Entity>,
     pub effect_type: EffectType,
     pub targets: Targets,
+}
+
+pub enum EffectType {
+    Damage { amount: i32 },
 }
 
 #[derive(Clone)]
@@ -43,13 +42,9 @@ pub fn run_effects(ecs: &mut World, mut events: EventReader<EffectEvent>) {
 fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
     match &effect.targets {
         Targets::Tile { tile_pos } => affect_tile(ecs, effect, *tile_pos),
-        Targets::Tiles { tiles } => tiles
-            .iter()
-            .for_each(|tile_pos| affect_tile(ecs, effect, *tile_pos)),
+        Targets::Tiles { tiles } => tiles.iter().for_each(|tile_pos| affect_tile(ecs, effect, *tile_pos)),
         Targets::Single { target } => affect_entity(ecs, effect, *target),
-        Targets::TargetList { targets } => targets
-            .iter()
-            .for_each(|entity| affect_entity(ecs, effect, *entity)),
+        Targets::TargetList { targets } => targets.iter().for_each(|entity| affect_entity(ecs, effect, *entity)),
     }
 }
 

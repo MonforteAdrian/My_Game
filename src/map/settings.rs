@@ -6,7 +6,10 @@ pub struct MapSettingsPlugin;
 impl Plugin for MapSettingsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(WorldCreationState::MapSettings), map_settings_startup)
-            .add_systems(OnExit(WorldCreationState::MapSettings), crate::despawn_screen::<MapSettingsScreen>);
+            .add_systems(
+                OnExit(WorldCreationState::MapSettings),
+                crate::despawn_screen::<MapSettingsScreen>,
+            );
     }
 }
 

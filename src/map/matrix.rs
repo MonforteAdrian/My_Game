@@ -1,7 +1,8 @@
 // TODO this might be useful in the future if I want different projections otherwise simply replace the call in layout with the formula
 /// Isometric matrices and offset
-const ISO_TILE_POSITION_MATRIX: ProjectionMatrix =
-    ProjectionMatrix { forward_matrix: [0.5, 0.25, -0.5, 0.25, 0.0, 0.5] };
+const ISO_TILE_POSITION_MATRIX: ProjectionMatrix = ProjectionMatrix {
+    forward_matrix: [0.5, 0.25, -0.5, 0.25, 0.0, 0.5],
+};
 
 /// Matrix for isometric projection
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +13,9 @@ pub struct ProjectionMatrix {
 
 impl Default for ProjectionMatrix {
     fn default() -> Self {
-        Self { forward_matrix: ISO_TILE_POSITION_MATRIX.forward_matrix }
+        Self {
+            forward_matrix: ISO_TILE_POSITION_MATRIX.forward_matrix,
+        }
     }
 }
 

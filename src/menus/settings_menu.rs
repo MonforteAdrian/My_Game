@@ -16,7 +16,13 @@ pub fn settings_menu_setup(mut commands: Commands) {
         ..default()
     };
 
-    let button_text_style = (TextFont { font_size: 40.0, ..default() }, TextColor(TEXT_COLOR));
+    let button_text_style = (
+        TextFont {
+            font_size: 40.0,
+            ..default()
+        },
+        TextColor(TEXT_COLOR),
+    );
 
     commands
         .spawn((
@@ -32,7 +38,11 @@ pub fn settings_menu_setup(mut commands: Commands) {
         .with_children(|parent| {
             parent
                 .spawn((
-                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    Node {
+                        flex_direction: FlexDirection::Column,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
                     BackgroundColor(CRIMSON.into()),
                 ))
                 .with_children(|parent| {

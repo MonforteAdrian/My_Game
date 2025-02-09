@@ -1,6 +1,8 @@
 use crate::GameState;
 use bevy::prelude::*;
 
+mod ai_system;
+use ai_system::*;
 mod movement_system;
 use movement_system::*;
 mod highlight_system;
@@ -14,7 +16,8 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (move_system, visibility_system, viewshed_highlight_system).run_if(in_state(GameState::InGame)),
-        );
+            (visibility_system, viewshed_highlight_system).run_if(in_state(GameState::InGame)),
+        )
+        .add_systems(FixedUpdate, move_system.run_if(in_state(GameState::InGame)));
     }
 }

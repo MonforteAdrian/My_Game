@@ -23,7 +23,13 @@ pub fn display_settings_menu_setup(mut commands: Commands, display_quality: Res<
         align_items: AlignItems::Center,
         ..default()
     };
-    let button_text_style = (TextFont { font_size: 40.0, ..default() }, TextColor(TEXT_COLOR));
+    let button_text_style = (
+        TextFont {
+            font_size: 40.0,
+            ..default()
+        },
+        TextColor(TEXT_COLOR),
+    );
 
     commands
         .spawn((
@@ -39,14 +45,24 @@ pub fn display_settings_menu_setup(mut commands: Commands, display_quality: Res<
         .with_children(|parent| {
             parent
                 .spawn((
-                    Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, ..default() },
+                    Node {
+                        flex_direction: FlexDirection::Column,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
                     BackgroundColor(CRIMSON.into()),
                 ))
                 .with_children(|parent| {
                     // Create a new `NodeBundle`, this time not setting its `flex_direction`. It will
                     // use the default value, `FlexDirection::Row`, from left to right.
                     parent
-                        .spawn((Node { align_items: AlignItems::Center, ..default() }, BackgroundColor(CRIMSON.into())))
+                        .spawn((
+                            Node {
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            BackgroundColor(CRIMSON.into()),
+                        ))
                         .with_children(|parent| {
                             // Display a label for the current setting
                             parent.spawn((Text::new("Display Quality"), button_text_style.clone()));
@@ -54,7 +70,11 @@ pub fn display_settings_menu_setup(mut commands: Commands, display_quality: Res<
                             for quality_setting in [DisplayQuality::Low, DisplayQuality::Medium, DisplayQuality::High] {
                                 let mut entity = parent.spawn((
                                     Button,
-                                    Node { width: Val::Px(150.0), height: Val::Px(65.0), ..button_node.clone() },
+                                    Node {
+                                        width: Val::Px(150.0),
+                                        height: Val::Px(65.0),
+                                        ..button_node.clone()
+                                    },
                                     BackgroundColor(NORMAL_BUTTON),
                                     quality_setting,
                                 ));
@@ -69,7 +89,12 @@ pub fn display_settings_menu_setup(mut commands: Commands, display_quality: Res<
                         });
                     // Display the back button to return to the settings screen
                     parent
-                        .spawn((Button, button_node, BackgroundColor(NORMAL_BUTTON), MenuButtonAction::BackToSettings))
+                        .spawn((
+                            Button,
+                            button_node,
+                            BackgroundColor(NORMAL_BUTTON),
+                            MenuButtonAction::BackToSettings,
+                        ))
                         .with_children(|parent| {
                             parent.spawn((Text::new("Back"), button_text_style));
                         });
