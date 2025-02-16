@@ -63,7 +63,6 @@ pub fn split_map(map: &NoiseMap) -> HashMap<(i32, i32), Chunk> {
 
     // Create chunks
     let mut chunks = generate_mesh_of_chunks(cols, 0, rows, 0);
-    let chunks_side = chunks.len().isqrt();
 
     for ((x, y), chunk) in chunks.iter_mut() {
         let chunk_copy = chunk.clone();

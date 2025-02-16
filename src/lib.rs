@@ -1,10 +1,11 @@
+#![feature(let_chains)]
 #![feature(test)]
 extern crate test;
 
+mod ai;
 mod camera;
 mod components;
-//mod effects;
-mod ai;
+mod effects;
 mod game;
 mod helpers;
 mod map;
@@ -17,7 +18,7 @@ mod systems;
 pub use ai::*;
 
 pub(crate) use components::*;
-//pub(crate) use effects::*;
+pub(crate) use effects::*;
 pub(crate) use helpers::*;
 pub(crate) use map::*;
 pub(crate) use raws::*;
@@ -25,7 +26,7 @@ pub(crate) use resources::*;
 pub(crate) use spawner::*;
 
 use camera::CameraPlugin;
-//use effects::EffectsPlugin;
+use effects::EffectsPlugin;
 use game::GamePlugin;
 use map::WorldCreationPlugin;
 use menus::MenuPlugin;
@@ -54,12 +55,20 @@ impl Plugin for AppPlugin {
             .add_plugins(MenuPlugin)
             .add_plugins(SystemsPlugin)
             .add_plugins(SpawnerPlugin)
-            //.add_plugins(EffectsPlugin)
+            .add_plugins(EffectsPlugin)
             .add_plugins(WorldCreationPlugin)
-            .add_plugins(GamePlugin);
+            .add_plugins(GamePlugin)
+            // Reflect
+            .register_type::<Position>()
+            .register_type::<Viewshed>()
+            .register_type::<PathfindingSteps>()
+            .register_type::<Direction>()
+            .register_type::<Health>();
 
         #[cfg(debug_assertions)]
         {
+            //use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
             app.add_plugins(FpsOverlayPlugin {
                 config: FpsOverlayConfig {
                     text_config: TextFont {
@@ -75,6 +84,8 @@ impl Plugin for AppPlugin {
                     enabled: true,
                 },
             });
+            // This hurts the performance hugely so be mindful on usage
+            //.add_plugins(WorldInspectorPlugin::new())
         }
     }
 }

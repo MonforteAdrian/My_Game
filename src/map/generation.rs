@@ -1,13 +1,13 @@
 use super::*;
 use crate::{
-    map::chunks::{generate_mesh_of_chunks, get_sorted_tiles, split_map},
+    map::chunks::{get_sorted_tiles, split_map},
     spawner::SpawnEntity,
     GameState, SpawnType, WorldCreationState, WorldMap,
 };
 use bevy::prelude::*;
-use std::ops::Neg;
 
 // TODO convert this to resources in map creation
+#[allow(dead_code)]
 const CHUNK_SIZE: Vec2 = Vec2::new(
     32.0 * CHUNK_DIMENSIONS.0 as f32,
     32.0 * (CHUNK_DIMENSIONS.1 as f32 / 4.0),
@@ -45,12 +45,7 @@ fn map_generation_startup(
     //let rows = (chunks_height / 2.0) as i32;
 
     let chunks = split_map(&noise_map);
-    //let chunks = generate_mesh_of_chunks(1, -1, 1, -1);
-    //let chunks = generate_mesh_of_chunks(0, 0, 0, 0);
     get_sorted_tiles(&chunks).into_iter().for_each(|tile| {
-        // Standard one level with obstacles
-        //let name = if i % 11 == 0 { "GrassBlock".to_string() } else { "StoneFloor".to_string() };
-
         // Checkboard pattern
         //let (chunk_x, chunk_y) = tile.chunk();
         //let name = if (chunk_x + chunk_y) % 2 == 0 { "GrassBlock".to_string() } else { "StoneBlock".to_string() };
@@ -86,8 +81,8 @@ fn map_generation_startup(
         name: "Dummy".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
-    let x = 10;
-    let y = 10;
+    let x = 20;
+    let y = 20;
     let z = chunks
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")

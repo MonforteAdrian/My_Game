@@ -23,7 +23,7 @@ pub use direction::*;
 pub(crate) use iter::ExactSizePositionIterator;
 
 /// Position Coordinates
-#[derive(Component, Debug, Copy, Clone, Eq, Default, PartialEq, Hash)]
+#[derive(Component, Reflect, Debug, Copy, Clone, Eq, Default, PartialEq, Hash)]
 pub struct Position {
     /// Position in the x coordinate (bottom-left to top-right)
     pub x: i32,

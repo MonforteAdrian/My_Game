@@ -1,27 +1,24 @@
-use crate::{find_path, Creature, EntityName, IsoGrid, PathfindingSteps, Position};
+use crate::{Creature, MoveTo, Position, Targets};
 use bevy::prelude::*;
-use std::collections::VecDeque;
 
 pub fn on_click(
     ev: Trigger<Pointer<Click>>,
+    mut event: EventWriter<MoveTo>,
     pos: Query<&Position>,
-    grid: Res<IsoGrid>,
-    mut creature_query: Query<(&EntityName, &Position, &mut PathfindingSteps), With<Creature>>,
+    mut creature_query: Query<(Entity, &Name), With<Creature>>,
 ) {
-    let Ok(pos) = pos.get(ev.entity()) else {
+    let Ok(destination) = pos.get(ev.entity()) else {
         return;
     };
     match ev.button {
         PointerButton::Primary => {
-            for (creature_name, creature_pos, mut creature_steps) in creature_query.iter_mut() {
-                if creature_name.0 != "Dummy" {
-                    continue;
+            for (entity, name) in creature_query.iter_mut() {
+                if name.as_str() == "Dummy" {
+                    event.send(MoveTo {
+                        creator: Some(entity),
+                        targets: Targets::Tile { tile: *destination },
+                    });
                 }
-                let Some(path) = find_path(creature_pos, pos, &grid) else {
-                    warn!("No path found");
-                    continue;
-                };
-                creature_steps.steps = VecDeque::from(path);
             }
         }
         PointerButton::Secondary => {}

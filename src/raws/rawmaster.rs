@@ -1,13 +1,13 @@
 use super::{CreatureBundle, ItemBundle, TileBundle};
 use crate::{
-    on_click, Creature, CursorHighlight, Direction, EntityName, GameState, Health, IsoGrid, Item, PathfindingSteps,
-    Position, SpawnEntity, Tile, Viewshed, ViewshedHighlight,
+    on_click, Creature, CursorHighlight, Direction, GameState, Health, IsoGrid, Item, PathfindingSteps, Position,
+    SpawnEntity, Tile, Viewshed, ViewshedHighlight,
 };
 use bevy::prelude::{
-    warn, AssetServer, Commands, Component, Entity, EventWriter, Over, Pointer, Query, Res, ResMut, Resource, Sprite,
-    StateScoped, Transform, Trigger,
+    warn, AssetServer, Commands, Component, Entity, EventWriter, Name, Over, Pointer, Query, Res, ResMut, Resource,
+    Sprite, StateScoped, Transform, Trigger,
 };
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 use std::ops::Neg;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
@@ -75,7 +75,7 @@ impl RawMaster {
         // Marker
         commands.entity(entity).insert(Tile {});
         // Name
-        commands.entity(entity).insert(EntityName(tile_template.name.clone()));
+        commands.entity(entity).insert(Name::new(tile_template.name.clone()));
         // Sprite
         commands
             .entity(entity)
@@ -124,9 +124,7 @@ impl RawMaster {
                 commands.entity(entity).insert(ViewshedHighlight {});
             }
             // Pathfinding
-            commands
-                .entity(entity)
-                .insert(PathfindingSteps { steps: VecDeque::new() });
+            commands.entity(entity).insert(PathfindingSteps::new());
             // Hovering Observers
             commands.entity(entity).observe(
                 |ev: Trigger<Pointer<Over>>,
@@ -179,7 +177,7 @@ impl RawMaster {
         // Name
         commands
             .entity(entity)
-            .insert(EntityName(creature_template.name.clone()));
+            .insert(Name::new(creature_template.name.clone()));
         // Sprite
         commands
             .entity(entity)
@@ -213,9 +211,7 @@ impl RawMaster {
         // Pathfinding
         commands.entity(entity).insert(Direction::default());
         // Pathfinding
-        commands
-            .entity(entity)
-            .insert(PathfindingSteps { steps: VecDeque::new() });
+        commands.entity(entity).insert(PathfindingSteps::new());
 
         entity
     }
@@ -236,7 +232,7 @@ impl RawMaster {
         // Marker
         commands.entity(entity).insert(Item {});
         // Name
-        commands.entity(entity).insert(EntityName(item_template.name.clone()));
+        commands.entity(entity).insert(Name::new(item_template.name.clone()));
         // Sprite
         commands
             .entity(entity)

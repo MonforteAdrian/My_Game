@@ -1,6 +1,6 @@
 use bevy::{
     prelude::{default, App, DefaultPlugins, ImagePlugin, PluginGroup, Window, WindowPlugin},
-    window::PresentMode,
+    //window::PresentMode,
 };
 use my_game::AppPlugin;
 

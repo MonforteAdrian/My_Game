@@ -1,9 +1,10 @@
-use bevy::prelude::Component;
+use bevy::prelude::{Component, Reflect};
 
 /// Default is 0 that correspond to the +X axis East and where Gandalf shall come
-#[derive(Component, Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+#[derive(Component, Reflect, Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub struct Direction(pub(crate) u8);
 
+#[allow(dead_code)]
 impl Direction {
     /// Direction to (1, 0, 0)
     /// Direction towards `X`
