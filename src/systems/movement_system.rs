@@ -1,4 +1,6 @@
-use crate::{find_path, Attack, Chasing, Creature, Direction, IsoGrid, MoveTo, PathfindingSteps, Position, Targets};
+use crate::{
+    find_path, Attack, Chasing, Creature, Direction, Effect, CurrentMap, Move, PathfindingSteps, Position, Targets,
+};
 use bevy::prelude::{warn, Entity, EventWriter, Query, ResMut, Transform, With};
 use rand::prelude::*;
 use std::ops::Neg;
@@ -16,9 +18,9 @@ pub fn move_system(
         ),
         With<Creature>,
     >,
-    mut move_entity_to_event: EventWriter<MoveTo>,
-    mut attack_entity_event: EventWriter<Attack>,
-    mut grid: ResMut<IsoGrid>,
+    mut move_entity_to_event: EventWriter<Effect<Move>>,
+    mut attack_entity_event: EventWriter<Effect<Attack>>,
+    mut grid: ResMut<CurrentMap>,
 ) {
     // this ideally should calculate the direction to go between the actual position with the
     // next step and then move the mob in that direction
@@ -27,7 +29,8 @@ pub fn move_system(
         // either don't move or move randomly to one of the neighbors
         if mob_steps.is_empty() {
             if let Some(destination) = find_random_valid_move(&grid, &mob_pos) {
-                move_entity_to_event.send(MoveTo {
+                move_entity_to_event.send(Effect::<Move> {
+                    data: Move {},
                     creator: Some(entity),
                     targets: Targets::Tile { tile: destination },
                 });
@@ -39,7 +42,8 @@ pub fn move_system(
         if let Some(chasing) = mob_chasing
             && mob_steps.len() == 1
         {
-            attack_entity_event.send(Attack {
+            attack_entity_event.send(Effect::<Attack> {
+                data: Attack {},
                 creator: Some(entity),
                 targets: Targets::Single { target: chasing.0 },
             });
@@ -47,14 +51,13 @@ pub fn move_system(
         }
 
         // Get the next position to move
-        let Some(next_step) = mob_steps.pop_front() else {
-            continue;
-        };
+        let Some(next_step) = mob_steps.pop_front() else { continue };
 
         // Check if the next step is a blocked tile(can happen as we don't check every time a blocked tile is added)
         if grid.blocked_coords.contains(&next_step) {
             if let Some(destination) = mob_steps.pop_back() {
-                move_entity_to_event.send(MoveTo {
+                move_entity_to_event.send(Effect::<Move> {
+                    data: Move {},
                     creator: Some(entity),
                     targets: Targets::Tile { tile: destination },
                 });
@@ -86,7 +89,7 @@ pub fn move_system(
 }
 
 /// Finds a valid random move that also has a valid path.
-fn find_random_valid_move(grid: &IsoGrid, mob_pos: &Position) -> Option<Position> {
+fn find_random_valid_move(grid: &CurrentMap, mob_pos: &Position) -> Option<Position> {
     let mut rng = rand::rng();
     if !rng.random_ratio(1, 20) {
         return None;

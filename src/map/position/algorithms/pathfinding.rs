@@ -1,4 +1,4 @@
-use crate::{position, IsoGrid, Position};
+use crate::{position, CurrentMap, Position};
 use bevy::prelude::{warn, Component, Reflect};
 use std::collections::VecDeque;
 
@@ -33,7 +33,7 @@ impl PathfindingSteps {
         self.0.back()
     }
 
-    pub fn create_path(&mut self, o_pos: &Position, d_pos: &Position, grid: &IsoGrid) {
+    pub fn create_path(&mut self, o_pos: &Position, d_pos: &Position, grid: &CurrentMap) {
         if let Some(path) = find_path(o_pos, d_pos, grid) {
             self.0 = VecDeque::from(path);
         } else {
@@ -42,7 +42,7 @@ impl PathfindingSteps {
     }
 }
 
-pub fn find_path(o_pos: &Position, d_pos: &Position, grid: &IsoGrid) -> Option<Vec<Position>> {
+pub fn find_path(o_pos: &Position, d_pos: &Position, grid: &CurrentMap) -> Option<Vec<Position>> {
     a_star(*o_pos, *d_pos, |o, h| {
         // Implementation of blocked_coords
         if h.x == 0 || h.y == 0 {

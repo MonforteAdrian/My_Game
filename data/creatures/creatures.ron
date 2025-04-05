@@ -1,16 +1,13 @@
+#![enable(implicit_some)]
 [
     CreatureBundle(
         name: "Dummy",
         sprite: "sprites/creatures/dummy.png",
-        view_range: 16,
-        view_angle: 120,
-        max_health: 100,
+        race: Human,
     ),
     CreatureBundle(
         name: "BadDummy",
         sprite: "sprites/creatures/bad_dummy.png",
-        view_range: 16,
-        view_angle: 120,
-        max_health: 50,
+        race: BadHuman,
     ),
 ]

@@ -90,6 +90,7 @@ fn zoom(
                 camera_settings.perspective_zoom_range.end,
             );
         }
+        _ => {}
     }
 }
 

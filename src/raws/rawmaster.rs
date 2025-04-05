@@ -1,11 +1,12 @@
 use super::{CreatureBundle, ItemBundle, TileBundle};
 use crate::{
-    on_click, Creature, CursorHighlight, Direction, GameState, Health, IsoGrid, Item, PathfindingSteps, Position,
-    SpawnEntity, Tile, Viewshed, ViewshedHighlight,
+    Backpack, Creature, CurrentMap, CursorHighlight, Direction, DoDamage, Equipment, GameState, Health, Item,
+    PathfindingSteps, Position, ProvidesHeal, SpawnEntity, Tile, Viewshed, ViewshedHighlight, on_click,
 };
+use bevy::picking::Pickable;
 use bevy::prelude::{
-    warn, AssetServer, Commands, Component, Entity, EventWriter, Name, Over, Pointer, Query, Res, ResMut, Resource,
-    Sprite, StateScoped, Transform, Trigger,
+    AssetServer, Commands, Component, Entity, EventWriter, Name, Over, Pointer, Query, Res, ResMut, Resource, Sprite,
+    StateScoped, Transform, Trigger, warn,
 };
 use std::collections::{HashMap, HashSet};
 use std::ops::Neg;
@@ -63,7 +64,7 @@ impl RawMaster {
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
-        current_map: &mut ResMut<IsoGrid>,
+        current_map: &mut ResMut<CurrentMap>,
         key: String,
         pos: SpawnType,
     ) -> Entity {
@@ -134,7 +135,7 @@ impl RawMaster {
                  highlighted_query: Query<(Entity, &Position, &CursorHighlight)>| {
                     // TODO this is bad we need something better
                     let mut new_selected = HashSet::new();
-                    if let Ok(pos) = pos_query.get(ev.entity()) {
+                    if let Ok(pos) = pos_query.get(ev.target()) {
                         new_selected.insert(pos);
                         spawn_event.send(SpawnEntity {
                             name: "SelectedBlock".to_string(),
@@ -154,6 +155,7 @@ impl RawMaster {
             );
         }
         // Picking Observers
+        commands.entity(entity).insert(Pickable::default());
         commands.entity(entity).observe(on_click);
 
         entity
@@ -163,7 +165,7 @@ impl RawMaster {
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
-        current_map: &mut ResMut<IsoGrid>,
+        current_map: &mut ResMut<CurrentMap>,
         key: String,
         pos: SpawnType,
     ) -> Entity {
@@ -196,22 +198,23 @@ impl RawMaster {
                 coord.y.neg() / 100.0 + coord.z + 0.003,
             ));
             // Viewshed only if the creature is AtPosition for now think about this later
-            commands.entity(entity).insert(Viewshed {
-                // TODO put the range fov in the data files
-                visible_tiles: HashSet::new(),
-                range: creature_template.view_range,
-                angle: creature_template.view_angle,
-            });
+            // TODO Maybe it should always have it but only trigger the fov algo on placement or movement
+            commands.entity(entity).insert(creature_template.race.get_viewshed());
         };
+        // Race
+        commands.entity(entity).insert(creature_template.race);
+        // Attributes
+        commands.entity(entity).insert(creature_template.race.get_attributes());
         // Health
-        commands.entity(entity).insert(Health {
-            current: creature_template.max_health,
-            max: creature_template.max_health,
-        });
-        // Pathfinding
+        commands.entity(entity).insert(creature_template.race.get_health());
+        // Direction
         commands.entity(entity).insert(Direction::default());
         // Pathfinding
         commands.entity(entity).insert(PathfindingSteps::new());
+        // Backpack
+        commands.entity(entity).insert(Backpack::default());
+        // Equipment
+        commands.entity(entity).insert(Equipment::default());
 
         entity
     }
@@ -220,7 +223,7 @@ impl RawMaster {
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
-        current_map: &ResMut<IsoGrid>,
+        current_map: &mut ResMut<CurrentMap>,
         key: String,
         pos: SpawnType,
     ) -> Entity {
@@ -242,11 +245,19 @@ impl RawMaster {
         // Transform
         if let SpawnType::AtPosition { x, y, z } = pos {
             let coord = current_map.layout.tile_to_world_pos(Position { x, y, z });
-            commands
-                .entity(entity)
-                .insert(Transform::from_xyz(coord.x, coord.y, coord.y.neg() + coord.z + 2.));
+            current_map.items.insert(Position { x, y, z }, entity);
+            commands.entity(entity).insert(Transform::from_xyz(
+                coord.x,
+                coord.y,
+                coord.y.neg() / 100.0 + coord.z + 0.003,
+            ));
         }
-
+        if let Some(heal) = item_template.heal {
+            commands.entity(entity).insert(ProvidesHeal(heal));
+        }
+        if let Some(dmg) = item_template.damage {
+            commands.entity(entity).insert(DoDamage(dmg));
+        }
         entity
     }
 
@@ -254,7 +265,7 @@ impl RawMaster {
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
-        current_map: &mut ResMut<IsoGrid>,
+        current_map: &mut ResMut<CurrentMap>,
         key: String,
         pos: SpawnType,
     ) -> Option<Entity> {
@@ -275,11 +286,11 @@ fn spawn_position(pos: SpawnType) -> impl Component {
     // Spawn in the specified location
     match pos {
         SpawnType::AtPosition { x, y, z } => Position { x, y, z },
+        //SpawnType::Carried { by } => InBackpack { owner: by },
         _ => Position { x: 0, y: 0, z: 0 },
-        //    SpawnType::Carried { by } => InBackpack { owner: by },
         //    SpawnType::Equipped { by } => {
         //        let slot = find_slot_for_equippable_item(tag, raws);
-        //        Equipped { owner: by, slot }
+        //        EquippedBy { owner: by, slot }
         //    }
     }
 }

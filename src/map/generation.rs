@@ -1,8 +1,8 @@
 use super::*;
 use crate::{
+    GameState, SpawnType, WorldCreationState, WorldMap,
     map::chunks::{get_sorted_tiles, split_map},
     spawner::SpawnEntity,
-    GameState, SpawnType, WorldCreationState, WorldMap,
 };
 use bevy::prelude::*;
 
@@ -81,20 +81,56 @@ fn map_generation_startup(
         name: "Dummy".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
-    let x = 20;
-    let y = 20;
+    //let x = 20;
+    //let y = 20;
+    //let z = chunks
+    //    .get(&position(x, y, 0).chunk())
+    //    .expect("extected to find a chunk")
+    //    .find_top_layer(&position(x, y, 0));
+    //spawn_event.send(SpawnEntity {
+    //    name: "BadDummy".to_string(),
+    //    pos: SpawnType::AtPosition { x, y, z },
+    //});
+    let x = 10;
+    let y = 10;
     let z = chunks
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
     spawn_event.send(SpawnEntity {
-        name: "BadDummy".to_string(),
+        name: "Heart".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
-    //spawn_event.send(SpawnEntity {
-    //    name: "Heart".to_string(),
-    //    pos: SpawnType::AtPosition { x: tile.x, y: tile.y, z: tile.z },
-    //});
+    let x = 15;
+    let y = 5;
+    let z = chunks
+        .get(&position(x, y, 0).chunk())
+        .expect("extected to find a chunk")
+        .find_top_layer(&position(x, y, 0));
+    spawn_event.send(SpawnEntity {
+        name: "RustySword".to_string(),
+        pos: SpawnType::AtPosition { x, y, z },
+    });
+    let x = 5;
+    let y = 5;
+    let z = chunks
+        .get(&position(x, y, 0).chunk())
+        .expect("extected to find a chunk")
+        .find_top_layer(&position(x, y, 0));
+    spawn_event.send(SpawnEntity {
+        name: "TreeWithFruit".to_string(),
+        pos: SpawnType::AtPosition { x, y, z },
+    });
+    let x = 5;
+    let y = 15;
+    let z = chunks
+        .get(&position(x, y, 0).chunk())
+        .expect("extected to find a chunk")
+        .find_top_layer(&position(x, y, 0));
+    spawn_event.send(SpawnEntity {
+        name: "Tree".to_string(),
+        pos: SpawnType::AtPosition { x, y, z },
+    });
 
     // TODO this should be moved out
     map_creation_state.set(WorldCreationState::Disabled);

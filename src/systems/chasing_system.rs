@@ -1,9 +1,9 @@
-use crate::{Chasing, Creature, MoveTo, PathfindingSteps, Position, Targets};
+use crate::{Chasing, Creature, Effect, Move, PathfindingSteps, Position, Targets};
 use bevy::prelude::{Commands, Entity, EventWriter, Query, With};
 
 pub fn chasing_system(
     mut commands: Commands,
-    mut move_entity_to_event: EventWriter<MoveTo>,
+    mut move_entity_to_event: EventWriter<Effect<Move>>,
     mut chaser_query: Query<(Entity, &Chasing, &PathfindingSteps), With<Chasing>>,
     creatures_query: Query<&Position, With<Creature>>,
 ) {
@@ -24,7 +24,8 @@ pub fn chasing_system(
             continue;
         }
         // If the target moved recalculate the pathfinding
-        move_entity_to_event.send(MoveTo {
+        move_entity_to_event.send(Effect::<Move> {
+            data: Move {},
             creator: Some(chaser_entity),
             targets: Targets::Tile { tile: *target_pos },
         });

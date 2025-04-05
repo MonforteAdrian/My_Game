@@ -38,7 +38,9 @@ pub fn setting_button<T: Resource + Component + PartialEq + Copy>(
 ) {
     for (interaction, button_setting, entity) in &interaction_query {
         if *interaction == Interaction::Pressed && *setting != *button_setting {
-            let (previous_button, mut previous_color) = selected_query.single_mut();
+            let Ok((previous_button, mut previous_color)) = selected_query.single_mut() else {
+                continue;
+            };
             *previous_color = NORMAL_BUTTON.into();
             commands.entity(previous_button).remove::<SelectedOption>();
             commands.entity(entity).insert(SelectedOption);

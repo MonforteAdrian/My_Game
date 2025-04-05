@@ -1,3 +1,4 @@
+#![enable(implicit_some)]
 [
     TileBundle(
         name: "SelectedBlock",
@@ -44,4 +45,25 @@
         sprite: "sprites/blocks/stone_floor.png",
         blocker: false,
     ),
+    TileBundle(
+        name: "Bush",
+        sprite: "sprites/blocks/bush.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "BushWithBerrys",
+        sprite: "sprites/blocks/bush_with_berrys.png",
+        blocker: false,
+    ),
+    TileBundle(
+        name: "Tree",
+        sprite: "sprites/blocks/tree.png",
+        blocker: true,
+    ),
+    TileBundle(
+        name: "TreeWithFruit",
+        sprite: "sprites/blocks/tree_with_fruit.png",
+        blocker: true,
+    ),
+
 ]

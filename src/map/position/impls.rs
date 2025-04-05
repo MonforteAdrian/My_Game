@@ -150,21 +150,9 @@ impl Div<Self> for Position {
     #[inline]
     fn div(self, rhs: Self) -> Self::Output {
         Self {
-            x: if rhs.x != 0 && self.x != 0 {
-                self.x.div(rhs.x)
-            } else {
-                self.x
-            },
-            y: if rhs.y != 0 && self.y != 0 {
-                self.y.div(rhs.y)
-            } else {
-                self.y
-            },
-            z: if rhs.z != 0 && self.z != 0 {
-                self.z.div(rhs.z)
-            } else {
-                self.z
-            },
+            x: if rhs.x != 0 && self.x != 0 { self.x.div(rhs.x) } else { self.x },
+            y: if rhs.y != 0 && self.y != 0 { self.y.div(rhs.y) } else { self.y },
+            z: if rhs.z != 0 && self.z != 0 { self.z.div(rhs.z) } else { self.z },
         }
     }
 }

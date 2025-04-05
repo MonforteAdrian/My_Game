@@ -1,6 +1,13 @@
+#![enable(implicit_some)]
 [
     ItemBundle(
         name: "Heart",
         sprite: "sprites/items/heart_dummy.png",
+        heal: 5,
+    ),
+    ItemBundle(
+        name: "RustySword",
+        sprite: "sprites/items/rusty_sword_dummy.png",
+        damage: 10,
     ),
 ]

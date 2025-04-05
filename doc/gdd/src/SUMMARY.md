@@ -10,6 +10,7 @@
 - [Game Mechanics](./game_mechanics/README.md)
   - [Resource Management](./game_mechanics/resource_management.md)
   - [Building](./game_mechanics/building.md)
+  - [System Reference Document](./game_mechanics/srd.md)
   - [Enemies](./game_mechanics/enemies.md)
   - [NPCs](./game_mechanics/npcs.md)
   - [Event System](./game_mechanics/event_system.md)

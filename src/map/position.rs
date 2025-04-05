@@ -19,7 +19,7 @@ mod tests;
 mod utils;
 
 pub(crate) use algorithms::*;
-pub use direction::*;
+pub(crate) use direction::*;
 pub(crate) use iter::ExactSizePositionIterator;
 
 /// Position Coordinates
@@ -147,5 +147,11 @@ impl Position {
     /// Retrieves all 18 neighbor coordinates around `self`
     pub fn all_neighbors(self) -> [Self; 18] {
         Self::ALL_NEIGHBORS_COORDS.map(|n| self.const_add(n))
+    }
+}
+
+impl std::fmt::Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
     }
 }

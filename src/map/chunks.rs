@@ -5,7 +5,7 @@ use noise::utils::NoiseMap;
 use std::collections::HashMap;
 
 /// (columns, rows, layers)
-pub const CHUNK_DIMENSIONS: (i32, i32, i32) = (16, 16, 4);
+pub const CHUNK_DIMENSIONS: (i32, i32, i32) = (16, 16, 1);
 
 /// Chunk parameters.
 #[derive(Component, Debug, Clone)]

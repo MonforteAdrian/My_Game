@@ -1,4 +1,5 @@
 #![feature(let_chains)]
+#![feature(trivial_bounds)]
 #![feature(test)]
 extern crate test;
 
@@ -36,13 +37,15 @@ use spawner::SpawnerPlugin;
 use splash::SplashPlugin;
 use systems::SystemsPlugin;
 
-use bevy::{app::App, prelude::*};
+use bevy::prelude::{App, Color, Commands, Component, Entity, Plugin, Query, TextFont, With, default};
 
 #[cfg(debug_assertions)]
 use bevy::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
     text::FontSmoothing,
 };
+//#[cfg(debug_assertions)]
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 pub struct AppPlugin;
 
@@ -63,12 +66,16 @@ impl Plugin for AppPlugin {
             .register_type::<Viewshed>()
             .register_type::<PathfindingSteps>()
             .register_type::<Direction>()
+            .register_type::<Backpack>()
+            .register_type::<InBackpack>()
+            .register_type::<Equipment>()
+            .register_type::<EquippedBy>()
+            .register_type::<Attributes>()
+            .register_type::<Race>()
             .register_type::<Health>();
 
         #[cfg(debug_assertions)]
         {
-            //use bevy_inspector_egui::quick::WorldInspectorPlugin;
-
             app.add_plugins(FpsOverlayPlugin {
                 config: FpsOverlayConfig {
                     text_config: TextFont {
@@ -78,14 +85,17 @@ impl Plugin for AppPlugin {
                         font: default(),
                         // We could also disable font smoothing,
                         font_smoothing: FontSmoothing::default(),
+                        line_height: default(),
                     },
                     // We can also change color of the overlay
                     text_color: Color::srgb(0.0, 1.0, 0.0),
                     enabled: true,
+                    refresh_interval: default(),
                 },
             });
             // This hurts the performance hugely so be mindful on usage
-            //.add_plugins(WorldInspectorPlugin::new())
+            // This complains if you use local bevy, use upstream bevy
+            //.add_plugins(WorldInspectorPlugin::new());
         }
     }
 }

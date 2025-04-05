@@ -1,5 +1,5 @@
 use crate::raws::*;
-use crate::IsoGrid;
+use crate::CurrentMap;
 use bevy::prelude::{App, AssetServer, Commands, Event, EventReader, Plugin, PreUpdate, Res, ResMut};
 
 pub struct SpawnerPlugin;
@@ -20,7 +20,7 @@ pub fn spawn_entity(
     mut events: EventReader<SpawnEntity>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut current_map: ResMut<IsoGrid>,
+    mut current_map: ResMut<CurrentMap>,
     raw_master: Res<RawMaster>,
 ) {
     for ev in events.read() {

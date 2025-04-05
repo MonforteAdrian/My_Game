@@ -32,8 +32,8 @@ fn load_creatures_from_ron(mut raw_master: ResMut<RawMaster>) {
     let ron_creatures = fs::read_to_string(CREATURES_FILE).expect("Unable to read the raws file");
     raw_master.raws.creatures = ron::from_str(&ron_creatures).expect("Failed to deserialize from RON");
 
-    let ron_tiles = fs::read_to_string(ITEMS_FILE).expect("Unable to read the raws file");
-    raw_master.raws.items = ron::from_str(&ron_tiles).expect("Failed to deserialize from RON");
+    let ron_items = fs::read_to_string(ITEMS_FILE).expect("Unable to read the raws file");
+    raw_master.raws.items = ron::from_str(&ron_items).expect("Failed to deserialize from RON");
 
     raw_master.load();
 }

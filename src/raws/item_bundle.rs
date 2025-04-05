@@ -5,4 +5,6 @@ use serde::Deserialize;
 pub struct ItemBundle {
     pub name: String,
     pub sprite: String,
+    pub heal: Option<u32>,
+    pub damage: Option<u32>,
 }
