@@ -1,7 +1,7 @@
 use crate::{
-    find_path, Attack, Chasing, Creature, Direction, Effect, CurrentMap, Move, PathfindingSteps, Position, Targets,
+    Attack, Chasing, Creature, CurrentMap, Direction, Effect, Move, PathfindingSteps, Position, Targets, find_path,
 };
-use bevy::prelude::{warn, Entity, EventWriter, Query, ResMut, Transform, With};
+use bevy::prelude::{Entity, EventWriter, Query, ResMut, Transform, With, warn};
 use rand::prelude::*;
 use std::ops::Neg;
 
@@ -29,7 +29,7 @@ pub fn move_system(
         // either don't move or move randomly to one of the neighbors
         if mob_steps.is_empty() {
             if let Some(destination) = find_random_valid_move(&grid, &mob_pos) {
-                move_entity_to_event.send(Effect::<Move> {
+                move_entity_to_event.write(Effect::<Move> {
                     data: Move {},
                     creator: Some(entity),
                     targets: Targets::Tile { tile: destination },
@@ -42,7 +42,7 @@ pub fn move_system(
         if let Some(chasing) = mob_chasing
             && mob_steps.len() == 1
         {
-            attack_entity_event.send(Effect::<Attack> {
+            attack_entity_event.write(Effect::<Attack> {
                 data: Attack {},
                 creator: Some(entity),
                 targets: Targets::Single { target: chasing.0 },
@@ -56,7 +56,7 @@ pub fn move_system(
         // Check if the next step is a blocked tile(can happen as we don't check every time a blocked tile is added)
         if grid.blocked_coords.contains(&next_step) {
             if let Some(destination) = mob_steps.pop_back() {
-                move_entity_to_event.send(Effect::<Move> {
+                move_entity_to_event.write(Effect::<Move> {
                     data: Move {},
                     creator: Some(entity),
                     targets: Targets::Tile { tile: destination },

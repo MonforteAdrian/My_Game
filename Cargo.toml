@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { features = ["bevy_dev_tools"], path = "../bevy_testing/bevy" }
-#bevy = { features = ["bevy_dev_tools"], version = "0.15.2" }
+#bevy = { features = ["bevy_dev_tools"], path = "../bevy_testing/bevy" }
+bevy = { features = ["bevy_dev_tools"], version = "0.16.0" }
 # this is commented because using local bevy was giving problems
 #bevy_reflect = "0.15.2"
 bevy-inspector-egui = "0.30.0"

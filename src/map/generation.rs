@@ -61,7 +61,7 @@ fn map_generation_startup(
             TileType::Floor => "Floor".to_string(),
         };
         let name = format!("{}{}", material, style).to_string();
-        spawn_event.send(SpawnEntity {
+        spawn_event.write(SpawnEntity {
             name,
             pos: SpawnType::AtPosition {
                 x: tile.pos.x,
@@ -77,7 +77,7 @@ fn map_generation_startup(
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
-    spawn_event.send(SpawnEntity {
+    spawn_event.write(SpawnEntity {
         name: "Dummy".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
@@ -87,7 +87,7 @@ fn map_generation_startup(
     //    .get(&position(x, y, 0).chunk())
     //    .expect("extected to find a chunk")
     //    .find_top_layer(&position(x, y, 0));
-    //spawn_event.send(SpawnEntity {
+    //spawn_event.write(SpawnEntity {
     //    name: "BadDummy".to_string(),
     //    pos: SpawnType::AtPosition { x, y, z },
     //});
@@ -97,7 +97,7 @@ fn map_generation_startup(
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
-    spawn_event.send(SpawnEntity {
+    spawn_event.write(SpawnEntity {
         name: "Heart".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
@@ -107,7 +107,7 @@ fn map_generation_startup(
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
-    spawn_event.send(SpawnEntity {
+    spawn_event.write(SpawnEntity {
         name: "RustySword".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
@@ -117,7 +117,7 @@ fn map_generation_startup(
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
-    spawn_event.send(SpawnEntity {
+    spawn_event.write(SpawnEntity {
         name: "TreeWithFruit".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });
@@ -127,7 +127,7 @@ fn map_generation_startup(
         .get(&position(x, y, 0).chunk())
         .expect("extected to find a chunk")
         .find_top_layer(&position(x, y, 0));
-    spawn_event.send(SpawnEntity {
+    spawn_event.write(SpawnEntity {
         name: "Tree".to_string(),
         pos: SpawnType::AtPosition { x, y, z },
     });

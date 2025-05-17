@@ -24,7 +24,7 @@ pub fn chasing_system(
             continue;
         }
         // If the target moved recalculate the pathfinding
-        move_entity_to_event.send(Effect::<Move> {
+        move_entity_to_event.write(Effect::<Move> {
             data: Move {},
             creator: Some(chaser_entity),
             targets: Targets::Tile { tile: *target_pos },

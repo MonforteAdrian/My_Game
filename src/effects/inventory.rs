@@ -53,7 +53,7 @@ pub fn use_item(
             backpack.content.remove(&target);
 
             if let Some(heal) = provides_heal {
-                heal_event.send(Effect::<Heal> {
+                heal_event.write(Effect::<Heal> {
                     data: Heal(heal.0),
                     creator: None,
                     targets: Targets::Single { target: user },

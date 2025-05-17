@@ -166,7 +166,7 @@ pub fn menu_action(
         if *interaction == Interaction::Pressed {
             match menu_button_action {
                 MenuButtonAction::Quit => {
-                    app_exit_events.send(AppExit::Success);
+                    app_exit_events.write(AppExit::Success);
                 }
                 MenuButtonAction::Play => {
                     menu_state.set(MenuState::Disabled);

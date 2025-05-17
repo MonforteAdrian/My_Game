@@ -137,7 +137,7 @@ impl RawMaster {
                     let mut new_selected = HashSet::new();
                     if let Ok(pos) = pos_query.get(ev.target()) {
                         new_selected.insert(pos);
-                        spawn_event.send(SpawnEntity {
+                        spawn_event.write(SpawnEntity {
                             name: "SelectedBlock".to_string(),
                             pos: SpawnType::AtPosition {
                                 x: pos.x,

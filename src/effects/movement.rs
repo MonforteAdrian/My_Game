@@ -23,7 +23,7 @@ pub fn chase_entity(
         let Ok(target_pos) = target_query.get(target) else { continue };
         // Add the Chasing component and send the move entity to event
         commands.entity(chaser).try_insert_if_new(Chasing(target));
-        move_entity_to_event.send(Effect::<Move> {
+        move_entity_to_event.write(Effect::<Move> {
             data: Move {},
             creator: Some(chaser),
             targets: Targets::Tile { tile: *target_pos },

@@ -1,4 +1,4 @@
-use crate::{Chase, Creature, Effect, CurrentMap, Position, Targets, Viewshed};
+use crate::{Chase, Creature, CurrentMap, Effect, Position, Targets, Viewshed};
 use bevy::prelude::{Entity, EventWriter, Query, Res, With};
 
 pub fn visibility_system(
@@ -15,7 +15,7 @@ pub fn visibility_system(
         for (other_pos, other_entity) in grid.entities.iter() {
             if viewshed.visible_tiles.contains(other_pos) && other_pos != pos {
                 // TODO in the future this should check factions and those things
-                chase_entity_event.send(Effect::<Chase> {
+                chase_entity_event.write(Effect::<Chase> {
                     data: Chase {},
                     creator: Some(entity),
                     targets: Targets::Single { target: *other_entity },

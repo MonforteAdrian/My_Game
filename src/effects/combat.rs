@@ -25,7 +25,7 @@ pub fn attack_entity(
                 attributes.strength
             };
             dbg!(&damage);
-            effect_event.send(Effect::<Damage> {
+            effect_event.write(Effect::<Damage> {
                 data: Damage(damage),
                 creator: Some(attacker),
                 targets: Targets::Single { target },
@@ -46,7 +46,7 @@ pub fn inflict_damage(
                 info!("{} have been hit. Losing {} hp", name, ev.data.0);
                 hp.current = hp.current.checked_sub(ev.data.0).unwrap_or(0);
                 if hp.current == 0 {
-                    death_event.send(Effect::<Death> {
+                    death_event.write(Effect::<Death> {
                         data: Death {},
                         creator: ev.creator,
                         targets: ev.targets.clone(),

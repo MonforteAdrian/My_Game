@@ -18,7 +18,7 @@ pub fn viewshed_highlight_system(
         // Spawn the highligh to the positions in viewshed and add the viewshedHighlight
         for tile in &viewshed.visible_tiles {
             new_visible_tiles.insert(*tile);
-            spawn_event.send(SpawnEntity {
+            spawn_event.write(SpawnEntity {
                 name: "ViewshedFloor".to_string(),
                 pos: SpawnType::AtPosition {
                     x: tile.x,

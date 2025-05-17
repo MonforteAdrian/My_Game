@@ -18,7 +18,7 @@ pub fn on_click(
         PointerButton::Primary => {
             for (entity, name) in creature_query.iter_mut() {
                 if name.as_str() == "Dummy" {
-                    event.send(Effect::<Move> {
+                    event.write(Effect::<Move> {
                         data: Move {},
                         creator: Some(entity),
                         targets: Targets::Tile { tile: *destination },
@@ -32,7 +32,7 @@ pub fn on_click(
                 if name.as_str() == "Dummy" {
                     for (item_entity, item_name) in sword_query.iter() {
                         if item_name.as_str() == "RustySword" {
-                            equip_item_event.send(Effect::<EquipItem> {
+                            equip_item_event.write(Effect::<EquipItem> {
                                 data: EquipItem {},
                                 creator: Some(entity),
                                 targets: Targets::Single { target: item_entity },
@@ -48,12 +48,12 @@ pub fn on_click(
                 if name.as_str() == "Dummy" {
                     for (item_entity, item_name) in sword_query.iter() {
                         if item_name.as_str() == "Heart" {
-                            //drop_item_event.send(Effect::<DropItem> {
+                            //drop_item_event.write(Effect::<DropItem> {
                             //    data: DropItem {},
                             //    creator: Some(entity),
                             //    targets: Targets::Single { target: item_entity },
                             //});
-                            use_item_event.send(Effect::<UseItem> {
+                            use_item_event.write(Effect::<UseItem> {
                                 data: UseItem {},
                                 creator: Some(entity),
                                 targets: Targets::Single { target: item_entity },
