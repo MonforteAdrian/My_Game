@@ -1,23 +1,23 @@
-use crate::raws::*;
 use crate::CurrentMap;
-use bevy::prelude::{App, AssetServer, Commands, Event, EventReader, Plugin, PreUpdate, Res, ResMut};
+use crate::raws::*;
+use bevy::prelude::{App, AssetServer, Commands, Message, MessageReader, Plugin, PreUpdate, Res, ResMut};
 
 pub struct SpawnerPlugin;
 
 impl Plugin for SpawnerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<SpawnEntity>().add_systems(PreUpdate, spawn_entity);
+        app.add_message::<SpawnEntity>().add_systems(PreUpdate, spawn_entity);
     }
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct SpawnEntity {
     pub name: String,
     pub pos: SpawnType,
 }
 
 pub fn spawn_entity(
-    mut events: EventReader<SpawnEntity>,
+    mut events: MessageReader<SpawnEntity>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut current_map: ResMut<CurrentMap>,

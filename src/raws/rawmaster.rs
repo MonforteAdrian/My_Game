@@ -5,8 +5,8 @@ use crate::{
 };
 use bevy::picking::Pickable;
 use bevy::prelude::{
-    AssetServer, Commands, Component, Entity, EventWriter, Name, Over, Pointer, Query, Res, ResMut, Resource, Sprite,
-    StateScoped, Transform, Trigger, warn,
+    AssetServer, Commands, Component, DespawnOnExit, Entity, MessageWriter, Name, Over, Pointer, Query, Res, ResMut,
+    Resource, Sprite, Transform, Trigger, warn,
 };
 use std::collections::{HashMap, HashSet};
 use std::ops::Neg;
@@ -72,7 +72,7 @@ impl RawMaster {
 
         let entity = commands.spawn_empty().id();
         // When we leave GameState::InGame it will despawn
-        commands.entity(entity).insert(StateScoped(GameState::InGame));
+        commands.entity(entity).insert(DespawnOnExit(GameState::InGame));
         // Marker
         commands.entity(entity).insert(Tile {});
         // Name
@@ -130,7 +130,7 @@ impl RawMaster {
             commands.entity(entity).observe(
                 |ev: Trigger<Pointer<Over>>,
                  mut commands: Commands,
-                 mut spawn_event: EventWriter<SpawnEntity>,
+                 mut spawn_event: MessageWriter<SpawnEntity>,
                  pos_query: Query<&Position>,
                  highlighted_query: Query<(Entity, &Position, &CursorHighlight)>| {
                     // TODO this is bad we need something better
@@ -173,7 +173,7 @@ impl RawMaster {
 
         let entity = commands.spawn_empty().id();
         // When we leave GameState::InGame it will despawn
-        commands.entity(entity).insert(StateScoped(GameState::InGame));
+        commands.entity(entity).insert(DespawnOnExit(GameState::InGame));
         // Marker
         commands.entity(entity).insert(Creature {});
         // Name
@@ -231,7 +231,7 @@ impl RawMaster {
 
         let entity = commands.spawn_empty().id();
         // When we leave GameState::InGame it will despawn
-        commands.entity(entity).insert(StateScoped(GameState::InGame));
+        commands.entity(entity).insert(DespawnOnExit(GameState::InGame));
         // Marker
         commands.entity(entity).insert(Item {});
         // Name

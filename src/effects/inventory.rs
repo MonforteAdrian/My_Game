@@ -3,7 +3,7 @@ use crate::ProvidesHeal;
 use super::*;
 
 pub fn pick_up_item(
-    mut event: EventReader<Effect<PickUpItem>>,
+    mut event: MessageReader<Effect<PickUpItem>>,
     mut commands: Commands,
     query: Query<(&Name, &Position)>,
     mut backpack_query: Query<&mut Backpack>,
@@ -33,9 +33,9 @@ pub fn pick_up_item(
 }
 
 pub fn use_item(
-    mut event: EventReader<Effect<UseItem>>,
+    mut event: MessageReader<Effect<UseItem>>,
     mut commands: Commands,
-    mut heal_event: EventWriter<Effect<Heal>>,
+    mut heal_event: MessageWriter<Effect<Heal>>,
     query: Query<(&Name, Option<&ProvidesHeal>)>,
     mut backpack_query: Query<&mut Backpack>,
 ) {
@@ -65,7 +65,7 @@ pub fn use_item(
 }
 
 pub fn drop_item(
-    mut event: EventReader<Effect<DropItem>>,
+    mut event: MessageReader<Effect<DropItem>>,
     mut commands: Commands,
     query: Query<(&Name, Option<&Position>, Option<&Direction>)>,
     mut backpack_query: Query<&mut Backpack>,
@@ -106,7 +106,7 @@ pub fn drop_item(
 }
 
 pub fn equip_item(
-    mut event: EventReader<Effect<EquipItem>>,
+    mut event: MessageReader<Effect<EquipItem>>,
     mut commands: Commands,
     query: Query<&Name>,
     mut backpack_query: Query<(&mut Backpack, &mut Equipment)>,

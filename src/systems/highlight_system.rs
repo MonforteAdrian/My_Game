@@ -1,10 +1,10 @@
 use crate::{Creature, Position, SpawnEntity, SpawnType, Viewshed, ViewshedHighlight};
-use bevy::prelude::{Changed, Commands, Entity, EventWriter, Query, With};
+use bevy::prelude::{Changed, Commands, Entity, MessageWriter, Query, With};
 use std::collections::HashSet;
 
 pub fn viewshed_highlight_system(
     mut commands: Commands,
-    mut spawn_event: EventWriter<SpawnEntity>,
+    mut spawn_event: MessageWriter<SpawnEntity>,
     mut query: Query<&Viewshed, (With<Creature>, Changed<Viewshed>)>,
     highlighted_query: Query<(Entity, &Position, &ViewshedHighlight)>,
 ) {

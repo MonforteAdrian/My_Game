@@ -1,7 +1,7 @@
 use crate::{
     Attack, Chasing, Creature, CurrentMap, Direction, Effect, Move, PathfindingSteps, Position, Targets, find_path,
 };
-use bevy::prelude::{Entity, EventWriter, Query, ResMut, Transform, With, warn};
+use bevy::prelude::{Entity, MessageWriter, Query, ResMut, Transform, With, warn};
 use rand::prelude::*;
 use std::ops::Neg;
 
@@ -18,8 +18,8 @@ pub fn move_system(
         ),
         With<Creature>,
     >,
-    mut move_entity_to_event: EventWriter<Effect<Move>>,
-    mut attack_entity_event: EventWriter<Effect<Attack>>,
+    mut move_entity_to_event: MessageWriter<Effect<Move>>,
+    mut attack_entity_event: MessageWriter<Effect<Attack>>,
     mut grid: ResMut<CurrentMap>,
 ) {
     // this ideally should calculate the direction to go between the actual position with the

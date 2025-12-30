@@ -1,4 +1,4 @@
-use bevy::{input::mouse::AccumulatedMouseScroll, prelude::*, render::camera::ScalingMode};
+use bevy::{input::mouse::AccumulatedMouseScroll, prelude::*, camera::ScalingMode};
 use std::{f32::consts::PI, ops::Range};
 
 use crate::TILE_SIZE;

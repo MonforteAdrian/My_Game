@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 #![feature(trivial_bounds)]
 #![feature(test)]
 extern crate test;

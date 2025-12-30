@@ -31,7 +31,7 @@ struct MapGenerationScreen;
 fn map_generation_startup(
     mut map_creation_state: ResMut<NextState<WorldCreationState>>,
     mut app_state: ResMut<NextState<GameState>>,
-    mut spawn_event: EventWriter<SpawnEntity>,
+    mut spawn_event: MessageWriter<SpawnEntity>,
     //window: Query<&mut Window>,
     world_map: Res<WorldMap>,
 ) {

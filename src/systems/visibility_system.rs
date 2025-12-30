@@ -1,9 +1,9 @@
 use crate::{Chase, Creature, CurrentMap, Effect, Position, Targets, Viewshed};
-use bevy::prelude::{Entity, EventWriter, Query, Res, With};
+use bevy::prelude::{Entity, MessageWriter, Query, Res, With};
 
 pub fn visibility_system(
     mut query: Query<(Entity, &Position, &Viewshed), With<Creature>>,
-    mut chase_entity_event: EventWriter<Effect<Chase>>,
+    mut chase_entity_event: MessageWriter<Effect<Chase>>,
     grid: Res<CurrentMap>,
 ) {
     for (entity, pos, viewshed) in query.iter_mut() {

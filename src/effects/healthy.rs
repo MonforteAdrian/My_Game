@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn heal_entity(mut event: EventReader<Effect<Heal>>, mut health_query: Query<(&Name, &mut Health)>) {
+pub fn heal_entity(mut event: MessageReader<Effect<Heal>>, mut health_query: Query<(&Name, &mut Health)>) {
     for ev in event.read() {
         match &ev.targets {
             Targets::Single { target } => {

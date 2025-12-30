@@ -5,8 +5,8 @@ use crate::Attributes;
 use super::*;
 
 pub fn attack_entity(
-    mut event: EventReader<Effect<Attack>>,
-    mut effect_event: EventWriter<Effect<Damage>>,
+    mut event: MessageReader<Effect<Attack>>,
+    mut effect_event: MessageWriter<Effect<Damage>>,
     query: Query<(&Name, &Attributes, &Equipment)>,
     weapon_query: Query<&DoDamage>,
 ) {
@@ -35,8 +35,8 @@ pub fn attack_entity(
 }
 
 pub fn inflict_damage(
-    mut event: EventReader<Effect<Damage>>,
-    mut death_event: EventWriter<Effect<Death>>,
+    mut event: MessageReader<Effect<Damage>>,
+    mut death_event: MessageWriter<Effect<Death>>,
     mut health_query: Query<(&Name, &mut Health)>,
 ) {
     for ev in event.read() {
@@ -60,7 +60,7 @@ pub fn inflict_damage(
     }
 }
 
-pub fn death(mut event: EventReader<Effect<Death>>, mut commands: Commands, names_query: Query<&Name>) {
+pub fn death(mut event: MessageReader<Effect<Death>>, mut commands: Commands, names_query: Query<&Name>) {
     for ev in event.read() {
         match &ev.targets {
             Targets::Single { target } => {

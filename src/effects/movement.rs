@@ -1,9 +1,9 @@
 use super::*;
 
 pub fn chase_entity(
-    mut event: EventReader<Effect<Chase>>,
+    mut event: MessageReader<Effect<Chase>>,
     mut commands: Commands,
-    mut move_entity_to_event: EventWriter<Effect<Move>>,
+    mut move_entity_to_event: MessageWriter<Effect<Move>>,
     target_query: Query<&Position>,
     entity_query: Query<Option<&Chasing>>,
     names_query: Query<&Name>,
@@ -32,7 +32,7 @@ pub fn chase_entity(
 }
 
 pub fn move_entity_to(
-    mut event: EventReader<Effect<Move>>,
+    mut event: MessageReader<Effect<Move>>,
     current_map: Res<CurrentMap>,
     mut query: Query<(&Position, &mut PathfindingSteps)>,
 ) {

@@ -1,9 +1,9 @@
 use crate::{Creature, CurrentMap, Effect, PickUpItem, Position, Targets};
-use bevy::prelude::{Entity, EventWriter, Name, Query, Res, With, info};
+use bevy::prelude::{Entity, MessageWriter, Name, Query, Res, With, info};
 
 pub fn position_check_system(
     mob_query: Query<(Entity, &Name, &Position), With<Creature>>,
-    mut pick_up_item_event: EventWriter<Effect<PickUpItem>>,
+    mut pick_up_item_event: MessageWriter<Effect<PickUpItem>>,
     curren_map: Res<CurrentMap>,
 ) {
     for (entity, name, pos) in mob_query.iter() {

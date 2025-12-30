@@ -3,7 +3,7 @@ use crate::{
     Position,
 };
 use bevy::prelude::{
-    App, Commands, Entity, Event, EventReader, EventWriter, GlobalTransform, Name, Plugin, PreUpdate, Query, Res,
+    App, Commands, Entity, GlobalTransform, Message, MessageReader, MessageWriter, Name, Plugin, PreUpdate, Query, Res,
     ResMut, Transform, info,
 };
 use std::ops::Neg;
@@ -21,16 +21,16 @@ pub struct EffectsPlugin;
 
 impl Plugin for EffectsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<Effect<Move>>()
-            .add_event::<Effect<Chase>>()
-            .add_event::<Effect<Attack>>()
-            .add_event::<Effect<Damage>>()
-            .add_event::<Effect<Heal>>()
-            .add_event::<Effect<Death>>()
-            .add_event::<Effect<PickUpItem>>()
-            .add_event::<Effect<UseItem>>()
-            .add_event::<Effect<DropItem>>()
-            .add_event::<Effect<EquipItem>>()
+        app.add_message::<Effect<Move>>()
+            .add_message::<Effect<Chase>>()
+            .add_message::<Effect<Attack>>()
+            .add_message::<Effect<Damage>>()
+            .add_message::<Effect<Heal>>()
+            .add_message::<Effect<Death>>()
+            .add_message::<Effect<PickUpItem>>()
+            .add_message::<Effect<UseItem>>()
+            .add_message::<Effect<DropItem>>()
+            .add_message::<Effect<EquipItem>>()
             .add_systems(
                 PreUpdate,
                 (
@@ -49,7 +49,7 @@ impl Plugin for EffectsPlugin {
     }
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct Effect<T> {
     pub data: T,
     pub creator: Option<Entity>,

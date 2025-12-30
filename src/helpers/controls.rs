@@ -3,10 +3,10 @@ use bevy::prelude::*;
 
 pub fn on_click(
     ev: Trigger<Pointer<Click>>,
-    mut event: EventWriter<Effect<Move>>,
-    mut equip_item_event: EventWriter<Effect<EquipItem>>,
-    mut drop_item_event: EventWriter<Effect<DropItem>>,
-    mut use_item_event: EventWriter<Effect<UseItem>>,
+    mut event: MessageWriter<Effect<Move>>,
+    mut equip_item_event: MessageWriter<Effect<EquipItem>>,
+    mut drop_item_event: MessageWriter<Effect<DropItem>>,
+    mut use_item_event: MessageWriter<Effect<UseItem>>,
     pos: Query<&Position>,
     sword_query: Query<(Entity, &Name), With<Item>>,
     mut creature_query: Query<(Entity, &Name), With<Creature>>,
