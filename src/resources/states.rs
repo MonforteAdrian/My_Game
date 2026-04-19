@@ -7,8 +7,7 @@ pub struct StatePlugin;
 
 impl Plugin for StatePlugin {
     fn build(&self, app: &mut App) {
-        app.enable_state_scoped_entities::<GameState>()
-            .init_state::<GameState>()
+        app.init_state::<GameState>()
             .init_state::<MenuState>()
             .init_state::<WorldCreationState>()
             .add_sub_state::<IsPaused>()

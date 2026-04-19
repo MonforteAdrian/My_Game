@@ -2,7 +2,7 @@ use crate::{Creature, DropItem, Effect, EquipItem, Item, Move, Position, Targets
 use bevy::prelude::*;
 
 pub fn on_click(
-    ev: Trigger<Pointer<Click>>,
+    ev: On<Pointer<Click>>,
     mut event: MessageWriter<Effect<Move>>,
     mut equip_item_event: MessageWriter<Effect<EquipItem>>,
     mut drop_item_event: MessageWriter<Effect<DropItem>>,
@@ -11,7 +11,7 @@ pub fn on_click(
     sword_query: Query<(Entity, &Name), With<Item>>,
     mut creature_query: Query<(Entity, &Name), With<Creature>>,
 ) {
-    let Ok(destination) = pos.get(ev.target()) else {
+    let Ok(destination) = pos.get(ev.event_target()) else {
         return;
     };
     match ev.button {

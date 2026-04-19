@@ -5,8 +5,8 @@ use crate::{
 };
 use bevy::picking::Pickable;
 use bevy::prelude::{
-    AssetServer, Commands, Component, DespawnOnExit, Entity, MessageWriter, Name, Over, Pointer, Query, Res, ResMut,
-    Resource, Sprite, Transform, Trigger, warn,
+    AssetServer, Commands, Component, DespawnOnExit, Entity, MessageWriter, Name, On, Over, Pointer, Query, Res,
+    ResMut, Resource, Sprite, Transform, warn,
 };
 use std::collections::{HashMap, HashSet};
 use std::ops::Neg;
@@ -128,14 +128,14 @@ impl RawMaster {
             commands.entity(entity).insert(PathfindingSteps::new());
             // Hovering Observers
             commands.entity(entity).observe(
-                |ev: Trigger<Pointer<Over>>,
+                |ev: On<Pointer<Over>>,
                  mut commands: Commands,
                  mut spawn_event: MessageWriter<SpawnEntity>,
                  pos_query: Query<&Position>,
                  highlighted_query: Query<(Entity, &Position, &CursorHighlight)>| {
                     // TODO this is bad we need something better
                     let mut new_selected = HashSet::new();
-                    if let Ok(pos) = pos_query.get(ev.target()) {
+                    if let Ok(pos) = pos_query.get(ev.entity) {
                         new_selected.insert(pos);
                         spawn_event.write(SpawnEntity {
                             name: "SelectedBlock".to_string(),

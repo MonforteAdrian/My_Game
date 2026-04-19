@@ -40,7 +40,7 @@ use bevy::prelude::{App, Color, Commands, Component, Entity, Plugin, Query, Text
 
 #[cfg(debug_assertions)]
 use bevy::{
-    dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
+    dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig},
     text::FontSmoothing,
 };
 //#[cfg(debug_assertions)]
@@ -84,12 +84,19 @@ impl Plugin for AppPlugin {
                         font: default(),
                         // We could also disable font smoothing,
                         font_smoothing: FontSmoothing::default(),
-                        line_height: default(),
+                        ..default()
                     },
                     // We can also change color of the overlay
                     text_color: Color::srgb(0.0, 1.0, 0.0),
                     enabled: true,
                     refresh_interval: default(),
+                    frame_time_graph_config: FrameTimeGraphConfig {
+                        enabled: true,
+                        // The minimum acceptable fps
+                        min_fps: 30.0,
+                        // The target fps
+                        target_fps: 144.0,
+                    },
                 },
             });
             // This hurts the performance hugely so be mindful on usage
